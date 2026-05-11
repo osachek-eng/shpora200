@@ -26,7 +26,7 @@
         <header class="flex justify-between items-end mb-8">
             <div>
                 <h1 class="text-3xl font-bold tracking-tight text-slate-900">Физика ЕГЭ</h1>
-                <p class="text-slate-500 font-medium">Тренировка до победного</p>
+                <p class="text-slate-500 font-medium">Тренажер с работой над ошибками</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm text-center">
                 <div class="text-3xl font-bold text-blue-600" id="score">0</div>
@@ -59,7 +59,7 @@
         <div class="mt-6 flex justify-between items-center px-4">
             <div class="flex items-center gap-2">
                 <div class="text-xs text-slate-400 font-medium uppercase tracking-widest" id="task-type-label">Загрузка...</div>
-                <div id="repeat-badge" class="hidden bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Повтор</div>
+                <div id="repeat-badge" class="hidden bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Работа над ошибками</div>
             </div>
             <button onclick="nextTask(true)" class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
                 Пропустить <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
@@ -133,12 +133,13 @@
             currentTask: null,
             mode: 0, 
             selectedBlocks: [],
-            repeatTask: null // Храним формулу, в которой была ошибка
+            // Работа над ошибками:
+            repeatQueue: [] // Очередь объектов {formula, mode, stage}
         };
 
         function setCategory(cat) {
             state.category = cat;
-            state.repeatTask = null; // Сбрасываем повтор при смене категории
+            state.repeatQueue = []; 
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.classList.remove('bg-slate-900', 'text-white', 'shadow-md');
                 btn.classList.add('bg-white', 'text-slate-800', 'border-slate-200');
@@ -153,24 +154,40 @@
             const repeatBadge = document.getElementById('repeat-badge');
             container.style.opacity = '0';
             
-            if (skipRepeat) state.repeatTask = null;
+            if (skipRepeat) state.repeatQueue = [];
 
             setTimeout(() => {
-                if (state.repeatTask) {
-                    state.currentTask = state.repeatTask;
-                    state.repeatTask = null; // Показываем один раз и сбрасываем, если снова не ошибется
+                if (state.repeatQueue.length > 0) {
+                    const repeatItem = state.repeatQueue.shift();
+                    state.currentTask = repeatItem.formula;
+                    
+                    if (repeatItem.stage === 'same') {
+                        // Первый этап повтора: тот же режим
+                        state.mode = repeatItem.mode;
+                        // Запланируем второй этап: другой режим
+                        state.repeatQueue.push({
+                            formula: repeatItem.formula,
+                            mode: -1, // Сигнал выбрать случайный
+                            stage: 'different'
+                        });
+                    } else {
+                        // Второй этап повтора: случайный другой режим
+                        let newMode = Math.floor(Math.random() * 3);
+                        if (newMode === repeatItem.mode) newMode = (newMode + 1) % 3;
+                        state.mode = newMode;
+                    }
+                    
                     repeatBadge.classList.remove('hidden');
                 } else {
                     const pool = state.category === 'all' 
                         ? FORMULAS_DB 
                         : FORMULAS_DB.filter(f => f.category === state.category);
                     state.currentTask = pool[Math.floor(Math.random() * pool.length)];
+                    state.mode = Math.floor(Math.random() * 3);
                     repeatBadge.classList.add('hidden');
                 }
 
-                state.mode = Math.floor(Math.random() * 3);
                 state.selectedBlocks = [];
-                
                 renderUI();
                 container.style.opacity = '1';
             }, 200);
@@ -304,20 +321,28 @@
                 state.score += 15;
                 card.classList.add('success-flash');
                 icon.innerText = "✅";
-                correctMsg.innerText = "Абсолютно верно!";
+                correctMsg.innerText = "Отлично! Закрепление пройдено.";
                 btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
                 
-                // Авто-скрытие при успехе
-                setTimeout(() => {
-                    if(!feedback.classList.contains('hidden')) {
-                        feedback.classList.add('hidden');
-                        nextTask();
-                    }
-                }, 1000);
+                // Авто-скрытие только если это НЕ режим повтора (чтобы пользователь успел прочитать)
+                if (state.repeatQueue.length === 0) {
+                    setTimeout(() => {
+                        if(!feedback.classList.contains('hidden')) {
+                            feedback.classList.add('hidden');
+                            nextTask();
+                        }
+                    }, 1000);
+                }
 
             } else {
                 state.score = Math.max(0, state.score - 10);
-                state.repeatTask = state.currentTask; // Запоминаем для следующего раза
+                // Ошиблись — добавляем в очередь повтор в этом же режиме
+                state.repeatQueue = [{
+                    formula: state.currentTask,
+                    mode: state.mode,
+                    stage: 'same'
+                }];
+                
                 card.classList.add('error-flash');
                 icon.innerText = "❌";
                 correctMsg.innerHTML = `
@@ -325,7 +350,10 @@
                         <p class="text-red-500 font-bold uppercase tracking-widest text-sm">Ошибка!</p>
                         <p class="text-slate-400 text-sm">Правильный ответ для <b>${state.currentTask.name}</b>:</p>
                         <div class="bg-slate-50 p-6 rounded-3xl" id="feedback-formula-render"></div>
-                        <p class="text-xs text-orange-500 font-medium italic">Запомните её, сейчас проверим еще раз!</p>
+                        <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100">
+                            <p class="text-xs text-orange-600 font-bold uppercase mb-1">Алгоритм закрепления:</p>
+                            <p class="text-xs text-slate-600">1. Сначала повторим в этом же режиме.<br>2. Затем проверим в другом формате.</p>
+                        </div>
                     </div>
                 `;
                 btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
