@@ -3,243 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Физика ЕГЭ: Умный тренажер</title>
+    <title>Физика ЕГЭ: Полный тренажер</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .katex-display { margin: 1em 0 !important; font-size: 1.3em; }
-        .success-flash { animation: success-bg 0.6s ease; }
-        .error-flash { animation: error-bg 0.6s ease; }
-        @keyframes success-bg { 0%, 100% { background-color: white; } 50% { background-color: #f0fdf4; } }
-        @keyframes error-bg { 0%, 100% { background-color: white; } 50% { background-color: #fef2f2; } }
-        .constructor-block { transition: all 0.2s; user-select: none; position: relative; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        .katex-display { margin: 1em 0 !important; font-size: 1.5em; }
+        .constructor-block { transition: all 0.2s; user-select: none; position: relative; cursor: pointer; }
         .hint-pulse { animation: hint-pulse-animation 2s infinite; border-color: #22c55e !important; background-color: #f0fdf4 !important; }
-        @keyframes hint-pulse-animation { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); } }
+        @keyframes hint-pulse-animation { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.2); } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .success-flash { animation: success-bg 0.6s ease; }
+        @keyframes success-bg { 0%, 100% { background-color: white; } 50% { background-color: #f0fdf4; } }
     </style>
 </head>
 <body class="text-slate-800">
-    <div id="app" class="max-w-5xl mx-auto px-4 py-4 md:py-8">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div id="app" class="max-w-4xl mx-auto px-4 py-4 md:py-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">200 Формул ЕГЭ</h1>
-                <p class="text-slate-500 font-medium italic">Исправленный режим сборки</p>
+                <h1 class="text-2xl font-black text-slate-900 leading-tight">200 ФОРМУЛ</h1>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Тренажер ЕГЭ по Физике</p>
             </div>
-            <div class="bg-white border border-slate-200 rounded-2xl px-6 py-2 shadow-sm text-center">
-                <div class="text-2xl font-bold text-blue-600" id="score">0</div>
-                <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400">Очки</div>
+            <div class="bg-white border-2 border-slate-100 rounded-2xl px-5 py-2 shadow-sm">
+                <div class="text-xl font-black text-blue-600" id="score">0</div>
+                <div class="text-[9px] uppercase font-bold text-slate-400 tracking-tighter text-center">Очки</div>
             </div>
         </header>
 
-        <div id="category-section" class="flex gap-2 overflow-x-auto pb-4 no-scrollbar mb-4">
-            <button onclick="setCategory('all')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-900 text-white shadow-lg">Все темы</button>
-            <button onclick="setCategory('механика')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white border border-slate-200 hover:bg-blue-50">Механика</button>
-            <button onclick="setCategory('мкт')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white border border-slate-200 hover:bg-blue-50">МКТ и Термо</button>
-            <button onclick="setCategory('электро')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white border border-slate-200 hover:bg-blue-50">Электродинамика</button>
-            <button onclick="setCategory('оптика')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white border border-slate-200 hover:bg-blue-50">Оптика</button>
+        <!-- Category Selector -->
+        <div class="flex gap-2 overflow-x-auto pb-4 no-scrollbar mb-4" id="cat-list">
+            <button onclick="setCategory('all')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-900 text-white">ВСЕ ТЕМЫ</button>
+            <button onclick="setCategory('кинематика')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">КИНЕМАТИКА</button>
+            <button onclick="setCategory('динамика')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">ДИНАМИКА</button>
+            <button onclick="setCategory('мкт')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">МКТ</button>
+            <button onclick="setCategory('электро')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">ЭЛЕКТРО</button>
         </div>
 
-        <main id="main-card" class="bg-white border border-slate-200 rounded-[2.5rem] p-6 md:p-10 shadow-xl min-h-[550px] flex flex-col justify-center relative overflow-hidden">
-            <div id="task-container" class="opacity-100 transition-opacity duration-300"></div>
+        <!-- Main Workspace -->
+        <main id="main-card" class="bg-white border-2 border-slate-100 rounded-[2rem] p-6 md:p-8 shadow-xl min-h-[500px] flex flex-col relative transition-all">
+            <div id="task-ui" class="flex-1 flex flex-col"></div>
             
-            <div id="feedback" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-md z-20 text-center p-6">
-                <div id="feedback-icon" class="text-7xl mb-4"></div>
-                <div id="feedback-correct" class="w-full"></div>
-                <button id="feedback-btn" class="mt-8 bg-slate-900 text-white px-12 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">ПРОДОЛЖИТЬ</button>
+            <!-- Result Overlay -->
+            <div id="feedback" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm z-30 text-center p-8 rounded-[2rem]">
+                <div id="feedback-icon" class="text-6xl mb-4 animate-bounce"></div>
+                <div id="feedback-text" class="mb-6"></div>
+                <button id="feedback-btn" class="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black shadow-lg hover:bg-slate-800 transition-all active:scale-95">СЛЕДУЮЩАЯ</button>
             </div>
         </main>
-
-        <div class="mt-6 flex flex-wrap justify-between items-center gap-4 px-2">
-            <div class="flex items-center gap-3">
-                <span class="px-3 py-1 bg-slate-200 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-widest" id="task-type-label">...</span>
-                <div id="hint-badge" class="hidden bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Этап: Закрепление (с подсказкой)</div>
-            </div>
+        
+        <div id="hint-msg" class="hidden mt-4 text-center">
+            <span class="bg-emerald-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm">Режим закрепления: следуй за номерами</span>
         </div>
     </div>
 
     <script>
-        const FORMULAS_DB = [
-            { name: "Скорость", formula: "v = \\frac{s}{t}", parts: ["v", "=", "s", "/", "t"], category: "механика" },
-            { name: "Ускорение", formula: "a = \\frac{v - v_0}{t}", parts: ["a", "=", "v", "-", "v_0", "/", "t"], category: "механика" },
-            { name: "Закон Кулона", formula: "F = k \\frac{q_1 q_2}{r^2}", parts: ["F", "=", "k", "q_1", "q_2", "/", "r^2"], category: "электро" },
-            { name: "Сила Архимеда", formula: "F_A = \\rho g V", parts: ["F_A", "=", "\\rho", "g", "V"], category: "механика" },
-            { name: "Импульс", formula: "p = m v", parts: ["p", "=", "m", "v"], category: "механика" }
+        // БАЗА ДАННЫХ ФОРМУЛ (Разделы из вашей шпоры)
+        const DB = [
+            // МЕХАНИКА: Кинематика
+            { name: "Перемещение (ось x)", formula: "S = x - x_0", parts: ["S", "=", "x", "-", "x_0"], cat: "кинематика" },
+            { name: "Скорость", formula: "v = \\frac{\\Delta x}{\\Delta t}", parts: ["v", "=", "\\Delta x", "/", "\\Delta t"], cat: "кинематика" },
+            { name: "Ускорение", formula: "a = \\frac{\\Delta v}{\\Delta t}", parts: ["a", "=", "\\Delta v", "/", "\\Delta t"], cat: "кинематика" },
+            { name: "Равнопеременное движение", formula: "x = x_0 + v_0 t + \\frac{a t^2}{2}", parts: ["x", "=", "x_0", "+", "v_0 t", "+", "a t^2 / 2"], cat: "кинематика" },
+            { name: "Центростремительное ускорение", formula: "a_{ц} = \\frac{v^2}{R}", parts: ["a_{ц}", "=", "v^2", "/", "R"], cat: "кинематика" },
+            
+            // МЕХАНИКА: Динамика и Статика
+            { name: "Второй закон Ньютона", formula: "F = m a", parts: ["F", "=", "m", "a"], cat: "динамика" },
+            { name: "Закон всемирного тяготения", formula: "F = G \\frac{m_1 m_2}{r^2}", parts: ["F", "=", "G", "m_1 m_2", "/", "r^2"], cat: "динамика" },
+            { name: "Сила упругости (Закон Гука)", formula: "F_{упр} = k |\\Delta x|", parts: ["F_{упр}", "=", "k", "|\\Delta x|"], cat: "динамика" },
+            { name: "Сила Архимеда", formula: "F_А = \\rho g V", parts: ["F_А", "=", "\\rho", "g", "V"], cat: "динамика" },
+            
+            // МКТ
+            { name: "Основное уравнение МКТ", formula: "p = \\frac{1}{3} n m_0 v^2", parts: ["p", "=", "1/3", "n", "m_0", "v^2"], cat: "мкт" },
+            { name: "Уравнение Менделеева-Клапейрона", formula: "p V = \\nu R T", parts: ["p", "V", "=", "\\nu", "R", "T"], cat: "мкт" },
+            { name: "Средняя энергия молекул", formula: "E = \\frac{3}{2} k T", parts: ["E", "=", "3/2", "k", "T"], cat: "мкт" },
+            
+            // ЭЛЕКТРОСТАТИКА
+            { name: "Закон Кулона", formula: "F = k \\frac{|q_1 q_2|}{r^2}", parts: ["F", "=", "k", "q_1 q_2", "/", "r^2"], cat: "электро" },
+            { name: "Напряженность поля", formula: "E = \\frac{F}{q}", parts: ["E", "=", "F", "/", "q"], cat: "электро" }
         ];
 
         let state = {
             score: 0,
             category: 'all',
-            currentTask: null,
-            mode: 1, // Всегда конструктор для теста исправления
-            selectedBlocks: [],
-            repeatQueue: [],
-            isHintMode: false
+            task: null,
+            userParts: [],
+            isHint: false,
+            repeatTask: null
         };
 
-        function setCategory(cat) {
-            state.category = cat;
-            state.repeatQueue = [];
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('bg-slate-900', 'text-white'));
-            event.currentTarget.classList.add('bg-slate-900', 'text-white');
-            nextTask();
+        function setCategory(c) {
+            state.category = c;
+            state.repeatTask = null;
+            document.querySelectorAll('.cat-btn').forEach(b => {
+                b.classList.replace('bg-slate-900', 'bg-white');
+                b.classList.replace('text-white', 'text-slate-800');
+            });
+            event.target.classList.replace('bg-white', 'bg-slate-900');
+            event.target.classList.replace('text-slate-800', 'text-white');
+            next();
         }
 
-        function nextTask() {
-            const container = document.getElementById('task-container');
-            const hintBadge = document.getElementById('hint-badge');
-            container.style.opacity = '0';
-
-            setTimeout(() => {
-                if (state.repeatQueue.length > 0) {
-                    const item = state.repeatQueue.shift();
-                    state.currentTask = item.formula;
-                    state.isHintMode = (item.stage === 'hint');
-                    state.mode = item.mode;
-                    if (state.isHintMode) {
-                        hintBadge.classList.remove('hidden');
-                        state.repeatQueue.push({ formula: item.formula, mode: item.mode, stage: 'check' });
-                    }
-                } else {
-                    state.isHintMode = false;
-                    hintBadge.classList.add('hidden');
-                    const pool = state.category === 'all' ? FORMULAS_DB : FORMULAS_DB.filter(f => f.category === state.category);
-                    state.currentTask = pool[Math.floor(Math.random() * pool.length)];
-                    state.mode = 1; // Оставим 1 для теста конструктора
-                }
-
-                state.selectedBlocks = [];
-                renderUI();
-                container.style.opacity = '1';
-            }, 200);
-        }
-
-        function renderUI() {
-            const container = document.getElementById('task-container');
-            const label = document.getElementById('task-type-label');
-            label.innerText = "РЕЖИМ: КОНСТРУКТОР";
+        function next() {
+            const ui = document.getElementById('task-ui');
+            const hintMsg = document.getElementById('hint-msg');
+            ui.innerHTML = '';
             
-            container.innerHTML = `
-                <div class="text-center space-y-6">
-                    <div class="text-blue-500 font-bold tracking-widest text-xs uppercase">Соберите формулу:</div>
-                    <h2 class="text-2xl font-bold text-slate-800">${state.currentTask.name}</h2>
-                    <div id="drop-zone" class="min-h-[100px] bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-wrap justify-center items-center gap-2 p-6 transition-colors">
-                        <span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки ниже...</span>
+            if (state.repeatTask) {
+                state.task = state.repeatTask;
+                state.isHint = true;
+                state.repeatTask = null;
+                hintMsg.classList.remove('hidden');
+            } else {
+                state.isHint = false;
+                hintMsg.classList.add('hidden');
+                const pool = state.category === 'all' ? DB : DB.filter(f => f.cat === state.category);
+                state.task = pool[Math.floor(Math.random() * pool.length)];
+            }
+
+            state.userParts = [];
+            
+            ui.innerHTML = `
+                <div class="flex-1 flex flex-col space-y-6">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-black text-slate-800 mb-1">${state.task.name}</h2>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Соберите формулу из блоков</p>
                     </div>
-                    <div id="block-pool" class="flex flex-wrap justify-center gap-3 mt-8"></div>
-                    <div class="pt-8 flex justify-center gap-4">
-                        <button onclick="clearDropZone()" class="px-6 py-4 rounded-2xl font-bold text-slate-400 hover:text-red-500 transition-colors">Сброс</button>
-                        <button onclick="checkConstructor()" class="w-full max-w-xs bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 shadow-lg active:scale-95 transition-all">ПРОВЕРИТЬ</button>
+
+                    <div id="drop-zone" class="min-h-[120px] bg-slate-50 border-4 border-dotted border-slate-100 rounded-3xl flex flex-wrap justify-center items-center gap-2 p-6 transition-all">
+                        <span class="text-slate-300 font-bold text-sm italic">Перетащите сюда...</span>
+                    </div>
+
+                    <div id="pool" class="flex flex-wrap justify-center gap-3 pt-4"></div>
+
+                    <div class="flex gap-3 pt-6">
+                        <button onclick="resetDrop()" class="flex-1 bg-slate-100 text-slate-400 py-4 rounded-2xl font-black hover:bg-slate-200 transition-all">СБРОС</button>
+                        <button onclick="check()" class="flex-[2] bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all">ПРОВЕРИТЬ</button>
                     </div>
                 </div>
             `;
-            renderBlocks();
+            renderPool();
         }
 
-        function renderBlocks() {
-            const pool = document.getElementById('block-pool');
-            let items = [...state.currentTask.parts];
-            const noise = ["m", "t", "2", "R", "x", "y", "0", "V", "k", "G"];
-            while(items.length < 10) {
-                let n = noise[Math.floor(Math.random() * noise.length)];
-                if(!items.includes(n)) items.push(n);
-            }
-            items.sort(() => 0.5 - Math.random());
+        function renderPool() {
+            const poolEl = document.getElementById('pool');
+            let blocks = [...state.task.parts];
+            const noise = ["m", "v", "a", "t", "2", "k", "R", "F", "P", "x", "y", "z", "0"];
             
-            pool.innerHTML = items.map(item => {
-                const isCorrect = state.currentTask.parts.includes(item);
-                let hintStyles = "";
-                let orderBadge = "";
-                
-                if (state.isHintMode && isCorrect) {
-                    hintStyles = "hint-pulse border-emerald-500 text-emerald-700";
-                    // Находим позицию этого блока в оригинальной формуле для подсказки порядка
-                    const order = state.currentTask.parts.indexOf(item) + 1;
-                    orderBadge = `<span class="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">${order}</span>`;
+            while(blocks.length < 10) {
+                let n = noise[Math.floor(Math.random() * noise.length)];
+                if(!blocks.includes(n)) blocks.push(n);
+            }
+            blocks.sort(() => 0.5 - Math.random());
+
+            poolEl.innerHTML = blocks.map(val => {
+                const idxInFormula = state.task.parts.indexOf(val);
+                const isCorrect = idxInFormula !== -1;
+                let styles = "bg-white border-2 border-slate-100 text-slate-600";
+                let badge = "";
+
+                if (state.isHint && isCorrect) {
+                    styles = "hint-pulse border-emerald-400 text-emerald-700 font-bold";
+                    badge = `<span class="absolute -top-2 -right-2 w-5 h-5 bg-emerald-500 text-white text-[10px] rounded-full flex items-center justify-center border-2 border-white font-black">${idxInFormula + 1}</span>`;
                 }
 
                 return `
-                    <button onclick="addBlock('${item}')" class="constructor-block border-2 border-slate-100 bg-white px-5 py-3 rounded-xl text-lg font-mono font-bold shadow-sm hover:border-blue-300 ${hintStyles}">
-                        ${orderBadge}
-                        ${item}
-                    </button>
+                    <div onclick="addToDrop('${val}')" class="constructor-block px-5 py-3 rounded-xl font-mono text-lg shadow-sm ${styles}">
+                        ${badge}${val}
+                    </div>
                 `;
             }).join('');
         }
 
-        function addBlock(val) {
-            document.getElementById('empty-hint')?.remove();
-            state.selectedBlocks.push(val);
+        function addToDrop(v) {
+            document.querySelector('#drop-zone span')?.remove();
+            state.userParts.push(v);
             const drop = document.getElementById('drop-zone');
             const el = document.createElement('div');
-            el.className = "bg-blue-600 text-white px-4 py-2 rounded-xl font-mono text-lg font-bold cursor-pointer hover:bg-blue-700 animate-in zoom-in duration-200";
-            el.innerText = val;
+            el.className = "bg-slate-800 text-white px-4 py-2 rounded-xl font-mono text-lg font-bold animate-in fade-in zoom-in duration-200";
+            el.innerText = v;
             el.onclick = () => {
-                const idx = state.selectedBlocks.lastIndexOf(val);
-                if (idx > -1) state.selectedBlocks.splice(idx, 1);
+                const i = state.userParts.lastIndexOf(v);
+                if(i > -1) state.userParts.splice(i, 1);
                 el.remove();
-                if(state.selectedBlocks.length === 0) drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки ниже...</span>';
+                if(state.userParts.length === 0) drop.innerHTML = '<span class="text-slate-300 font-bold text-sm italic">Перетащите сюда...</span>';
             };
             drop.appendChild(el);
         }
 
-        function clearDropZone() {
-            state.selectedBlocks = [];
-            const drop = document.getElementById('drop-zone');
-            drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки ниже...</span>';
+        function resetDrop() {
+            state.userParts = [];
+            document.getElementById('drop-zone').innerHTML = '<span class="text-slate-300 font-bold text-sm italic">Перетащите сюда...</span>';
         }
 
-        function checkConstructor() {
-            // Исправленная логика сравнения:
-            // 1. Убираем пробелы и лишние символы
-            // 2. Сравниваем массив строк напрямую
-            const result = state.selectedBlocks.join('').trim();
-            const correct = state.currentTask.parts.join('').trim();
-            
-            verify(result === correct);
-        }
-
-        function verify(isCorrect) {
-            const card = document.getElementById('main-card');
-            const feedback = document.getElementById('feedback');
+        function check() {
+            // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: точное сравнение массивов
+            const isMatch = JSON.stringify(state.userParts) === JSON.stringify(state.task.parts);
+            const overlay = document.getElementById('feedback');
             const icon = document.getElementById('feedback-icon');
-            const msg = document.getElementById('feedback-correct');
+            const text = document.getElementById('feedback-text');
             const btn = document.getElementById('feedback-btn');
 
-            if (isCorrect) {
-                state.score += 20;
-                card.classList.add('success-flash');
-                icon.innerHTML = "🎯";
-                msg.innerHTML = `<h3 class="text-2xl font-bold text-green-600">Верно!</h3><p class="text-slate-500 font-medium">Отличная работа</p>`;
-                btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
-                setTimeout(() => { if(!feedback.classList.contains('hidden')) { feedback.classList.add('hidden'); nextTask(); } }, 1500);
+            if (isMatch) {
+                state.score += state.isHint ? 5 : 20;
+                document.getElementById('main-card').classList.add('success-flash');
+                icon.innerText = "⭐";
+                text.innerHTML = `<h3 class="text-2xl font-black text-emerald-600 mb-2">БРАВО!</h3><p class="text-slate-400 font-bold">Формула верна</p>`;
+                btn.onclick = () => { overlay.classList.add('hidden'); next(); };
             } else {
                 state.score = Math.max(0, state.score - 10);
-                state.repeatQueue = [{ formula: state.currentTask, mode: 1, stage: 'hint' }];
-                card.classList.add('error-flash');
-                icon.innerHTML = "🤔";
-                msg.innerHTML = `
-                    <div class="space-y-4">
-                        <h3 class="text-2xl font-bold text-red-600">Почти получилось!</h3>
-                        <p class="text-slate-400">Верный ответ:</p>
-                        <div class="bg-slate-50 p-6 rounded-3xl" id="correct-render"></div>
-                        <div class="bg-emerald-50 text-emerald-700 p-4 rounded-xl text-sm border border-emerald-100">
-                            В режиме закрепления мы добавили номера на зеленых блоках. Собирайте их по порядку!
-                        </div>
-                    </div>
+                state.repeatTask = state.task;
+                icon.innerText = "💡";
+                text.innerHTML = `
+                    <h3 class="text-2xl font-black text-rose-500 mb-2">ОШИБКА</h3>
+                    <div id="math-res" class="bg-slate-50 p-4 rounded-2xl mb-2"></div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-tighter">Запомни и повтори по номерам!</p>
                 `;
-                btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
-                setTimeout(() => katex.render(state.currentTask.formula, document.getElementById('correct-render'), { displayMode: true }), 10);
+                btn.onclick = () => { overlay.classList.add('hidden'); next(); };
+                setTimeout(() => katex.render(state.task.formula, document.getElementById('math-res')), 50);
             }
 
             document.getElementById('score').innerText = state.score;
-            feedback.classList.remove('hidden');
-            setTimeout(() => card.classList.remove('success-flash', 'error-flash'), 600);
+            overlay.classList.remove('hidden');
+            setTimeout(() => document.getElementById('main-card').classList.remove('success-flash'), 600);
         }
 
-        window.onload = nextTask;
+        window.onload = next;
     </script>
 </body>
 </html>
