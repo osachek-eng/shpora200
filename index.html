@@ -9,16 +9,16 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .katex-display { margin: 1em 0 !important; font-size: 1.3em; }
         .success-flash { animation: success-bg 0.6s ease; }
         .error-flash { animation: error-bg 0.6s ease; }
         @keyframes success-bg { 0%, 100% { background-color: white; } 50% { background-color: #f0fdf4; } }
         @keyframes error-bg { 0%, 100% { background-color: white; } 50% { background-color: #fef2f2; } }
-        .constructor-block { user-select: none; cursor: pointer; transition: all 0.2s; }
+        .constructor-block { transition: all 0.2s; user-select: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .hint-pulse { animation: hint-border 1.5s infinite; }
-        @keyframes hint-border { 0%, 100% { border-color: #22c55e; box-shadow: 0 0 0 0px rgba(34, 197, 94, 0.2); } 50% { border-color: #4ade80; box-shadow: 0 0 0 10px rgba(34, 197, 94, 0.1); } }
+        .hint-pulse { animation: hint-pulse-animation 1.5s infinite; border-color: #22c55e !important; }
+        @keyframes hint-pulse-animation { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 15px 5px rgba(34, 197, 94, 0.2); } }
     </style>
 </head>
 <body class="text-slate-800">
@@ -27,13 +27,11 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">200 Формул ЕГЭ</h1>
-                <p class="text-slate-500 font-medium italic">Тренажер с адаптивным обучением</p>
+                <p class="text-slate-500 font-medium italic">Умный режим закрепления ошибок</p>
             </div>
-            <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="bg-white border border-slate-200 rounded-2xl px-5 py-2 shadow-sm flex-1 text-center min-w-[100px]">
-                    <div class="text-2xl font-bold text-blue-600" id="score">0</div>
-                    <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400">Очки</div>
-                </div>
+            <div class="bg-white border border-slate-200 rounded-2xl px-6 py-2 shadow-sm text-center">
+                <div class="text-2xl font-bold text-blue-600" id="score">0</div>
+                <div class="text-[10px] uppercase tracking-widest font-bold text-slate-400">Очки</div>
             </div>
         </header>
 
@@ -48,11 +46,11 @@
             <button onclick="setCategory('ядерка')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-white border border-slate-200 hover:bg-blue-50">Ядерная/Кванты</button>
         </div>
 
-        <!-- Main Workspace -->
-        <main id="main-card" class="bg-white border border-slate-200 rounded-[2.5rem] p-6 md:p-10 shadow-xl min-h-[550px] flex flex-col justify-center relative overflow-hidden transition-all duration-500">
+        <!-- Main Card -->
+        <main id="main-card" class="bg-white border border-slate-200 rounded-[2.5rem] p-6 md:p-10 shadow-xl min-h-[550px] flex flex-col justify-center relative overflow-hidden">
             <div id="task-container" class="opacity-100 transition-opacity duration-300"></div>
             
-            <!-- Feedback Overlay -->
+            <!-- Feedback Layer -->
             <div id="feedback" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-md z-20 text-center p-6">
                 <div id="feedback-icon" class="text-7xl mb-4"></div>
                 <div id="feedback-correct" class="w-full"></div>
@@ -60,57 +58,53 @@
             </div>
         </main>
 
-        <!-- Footer -->
+        <!-- Status Badges -->
         <div class="mt-6 flex flex-wrap justify-between items-center gap-4 px-2">
             <div class="flex items-center gap-3">
                 <span class="px-3 py-1 bg-slate-200 text-slate-600 rounded-full text-[10px] font-bold uppercase tracking-widest" id="task-type-label">...</span>
-                <div id="repeat-badge" class="hidden bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Этап: Закрепление (Подсказка)</div>
-                <div id="check-badge" class="hidden bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Этап: Контроль (Без подсказки)</div>
+                <div id="hint-badge" class="hidden bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Этап 1: Подсказка (Зеленые блоки)</div>
+                <div id="check-badge" class="hidden bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Этап 2: Контроль (Без подсказок)</div>
             </div>
-            <button onclick="nextTask(true)" class="text-sm font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-wider flex items-center gap-2">
-                Пропустить 
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-            </button>
         </div>
     </div>
 
     <script>
+        // Расширенная база данных по вашему файлу
         const FORMULAS_DB = [
             // МЕХАНИКА
-            { name: "Перемещение вдоль оси", formula: "S = \\Delta x = x - x_0", parts: ["S", "=", "\\Delta x", "=", "x", "-", "x_0"], missing: "x-x_0", category: "механика" },
-            { name: "Скорость (равномерное)", formula: "V = \\frac{\\Delta x}{\\Delta t}", parts: ["V", "=", "\\frac{\\Delta x}{\\Delta t}"], missing: "\\Delta x", category: "механика" },
+            { name: "Перемещение", formula: "S = x - x_0", parts: ["S", "=", "x", "-", "x_0"], missing: "x-x_0", category: "механика" },
+            { name: "Скорость", formula: "V = \\frac{\\Delta x}{\\Delta t}", parts: ["V", "=", "\\frac{\\Delta x}{\\Delta t}"], missing: "\\Delta x", category: "механика" },
             { name: "Ускорение", formula: "a = \\frac{\\Delta V}{\\Delta t}", parts: ["a", "=", "\\frac{\\Delta V}{\\Delta t}"], missing: "\\Delta V", category: "механика" },
             { name: "Координата (равнопеременное)", formula: "x = x_0 + V_0t + \\frac{at^2}{2}", parts: ["x", "=", "x_0", "+", "V_0t", "+", "\\frac{at^2}{2}"], missing: "\\frac{at^2}{2}", category: "механика" },
-            { name: "Формула без времени", formula: "S_x = \\frac{V_x^2 - V_{0x}^2}{2a_x}", parts: ["S_x", "=", "\\frac{V_x^2 - V_{0x}^2}{2a_x}"], missing: "2a_x", category: "механика" },
-            { name: "Центростремительное ускорение", formula: "a_ц = \\frac{v^2}{R}", parts: ["a_ц", "=", "\\frac{v^2}{R}"], missing: "R", category: "механика" },
-            { name: "Закон всемирного тяготения", formula: "F = G \\frac{m_1 m_2}{r^2}", parts: ["F", "=", "G", "\\frac{m_1 m_2}{r^2}"], missing: "r^2", category: "механика" },
-            { name: "Сила Архимеда", formula: "F_A = \\rho_{ж} g V_{погр}", parts: ["F_A", "=", "\\rho_{ж}", "g", "V_{погр}"], missing: "\\rho_{ж}", category: "механика" },
-            { name: "Импульс тела", formula: "p = mv", parts: ["p", "=", "m", "v"], missing: "mv", category: "механика" },
-            { name: "Работа силы", formula: "A = F S \\cos \\alpha", parts: ["A", "=", "F", "S", "\\cos \\alpha"], missing: "\\cos \\alpha", category: "механика" },
+            { name: "Линейная скорость (вращение)", formula: "v = \\frac{2\\pi R}{T}", parts: ["v", "=", "\\frac{2\\pi R}{T}"], missing: "2\\pi R", category: "механика" },
+            { name: "Центростремительное ускорение", formula: "a_ц = \\frac{v^2}{R}", parts: ["a_ц", "=", "\\frac{v^2}{R}"], missing: "v^2", category: "механика" },
+            { name: "Сила упругости", formula: "F = k |\\Delta x|", parts: ["F", "=", "k", "|\\Delta x|"], missing: "k", category: "механика" },
+            { name: "Сила Архимеда", formula: "F_A = \\rho g V", parts: ["F_A", "=", "\\rho", "g", "V"], missing: "\\rho", category: "механика" },
             
-            // МКТ / ТЕРМО
-            { name: "Основное уравнение МКТ", formula: "p = \\frac{1}{3} n m_0 v^2", parts: ["p", "=", "\\frac{1}{3}", "n", "m_0", "v^2"], missing: "1/3", category: "мкт" },
-            { name: "Уравнение Менделеева-Клапейрона", formula: "pV = \\nu RT", parts: ["p", "V", "=", "\\nu", "R", "T"], missing: "\\nu RT", category: "мкт" },
-            { name: "Внутренняя энергия газа", formula: "U = \\frac{3}{2} \\nu RT", parts: ["U", "=", "\\frac{3}{2}", "\\nu", "R", "T"], missing: "3/2", category: "мкт" },
-            { name: "Первый закон термодинамики", formula: "Q = \\Delta U + A", parts: ["Q", "=", "\\Delta U", "+", "A"], missing: "\\Delta U", category: "мкт" },
+            // МКТ
+            { name: "Давление МКТ", formula: "p = \\frac{2}{3} n E", parts: ["p", "=", "\\frac{2}{3}", "n", "E"], missing: "2/3", category: "мкт" },
+            { name: "Менделеев-Клапейрон", formula: "pV = \\frac{m}{M} RT", parts: ["p", "V", "=", "\\frac{m}{M}", "R", "T"], missing: "RT", category: "мкт" },
+            { name: "Внутренняя энергия", formula: "U = \\frac{3}{2} \\nu RT", parts: ["U", "=", "\\frac{3}{2}", "\\nu", "R", "T"], missing: "3/2", category: "мкт" },
             
-            // ЭЛЕКТРО / МАГНЕТИЗМ
+            // ЭЛЕКТРИЧЕСТВО
             { name: "Закон Кулона", formula: "F = k \\frac{|q_1 q_2|}{r^2}", parts: ["F", "=", "k", "\\frac{|q_1 q_2|}{r^2}"], missing: "r^2", category: "электро" },
-            { name: "Закон Ома для полной цепи", formula: "I = \\frac{\\varepsilon}{R+r}", parts: ["I", "=", "\\frac{\\varepsilon}{R+r}"], missing: "R+r", category: "электро" },
-            { name: "Сила Ампера", formula: "F_A = B I L \\sin \\alpha", parts: ["F_A", "=", "B", "I", "L", "\\sin \\alpha"], missing: "B I L", category: "магнетизм" },
-            { name: "Сила Лоренца", formula: "F_л = q v B \\sin \\alpha", parts: ["F_л", "=", "q", "v", "B", "\\sin \\alpha"], missing: "q v B", category: "магнетизм" },
-            { name: "Период контура (Томсона)", formula: "T = 2\\pi \\sqrt{LC}", parts: ["T", "=", "2\\pi", "\\sqrt{LC}"], missing: "LC", category: "магнетизм" },
+            { name: "Закон Ома", formula: "I = \\frac{U}{R}", parts: ["I", "=", "\\frac{U}{R}"], missing: "U/R", category: "электро" },
+            { name: "Мощность тока", formula: "P = UI", parts: ["P", "=", "U", "I"], missing: "UI", category: "электро" },
             
+            // МАГНЕТИЗМ
+            { name: "Сила Ампера", formula: "F_A = BIL \\sin \\alpha", parts: ["F_A", "=", "B", "I", "L", "\\sin \\alpha"], missing: "BIL", category: "магнетизм" },
+            { name: "Сила Лоренца", formula: "F_л = qvB \\sin \\alpha", parts: ["F_л", "=", "q", "v", "B", "\\sin \\alpha"], missing: "qvB", category: "магнетизм" },
+            { name: "Период контура", formula: "T = 2\\pi \\sqrt{LC}", parts: ["T", "=", "2\\pi", "\\sqrt{LC}"], missing: "LC", category: "магнетизм" },
+
             // ОПТИКА / КВАНТЫ
-            { name: "Закон Снеллиуса", formula: "n_1 \\sin \\alpha = n_2 \\sin \\beta", parts: ["n_1", "\\sin \\alpha", "=", "n_2", "\\sin \\beta"], missing: "n_2", category: "оптика" },
-            { name: "Формула тонкой линзы", formula: "\\frac{1}{F} = \\frac{1}{d} + \\frac{1}{f}", parts: ["\\frac{1}{F}", "=", "\\frac{1}{d}", "+", "\\frac{1}{f}"], missing: "1/d", category: "оптика" },
-            { name: "Уравнение фотоэффекта", formula: "h\\nu = A_{вых} + E_{кmax}", parts: ["h\\nu", "=", "A_{вых}", "+", "E_{кmax}"], missing: "A_{вых}", category: "ядерка" },
-            { name: "Закон радиоактивного распада", formula: "N = N_0 2^{-\\frac{t}{T}}", parts: ["N", "=", "N_0", "2^{-\\frac{t}{T}}"], missing: "2^{-\\frac{t}{T}}", category: "ядерка" }
+            { name: "Закон Снеллиуса", formula: "n_1 \\sin \\alpha = n_2 \\sin \\beta", parts: ["n_1", "\\sin \\alpha", "=", "n_2", "\\sin \\beta"], missing: "n_1", category: "оптика" },
+            { name: "Энергия фотона", formula: "E = h\\nu", parts: ["E", "=", "h", "\\nu"], missing: "h\\nu", category: "ядерка" },
+            { name: "Закон распада", formula: "N = N_0 2^{-\\frac{t}{T}}", parts: ["N", "=", "N_0", "2^{-\\frac{t}{T}}"], missing: "2^{-\\frac{t}{T}}", category: "ядерка" }
         ];
 
         let state = {
-            category: 'all',
             score: 0,
+            category: 'all',
             currentTask: null,
             mode: 0, 
             selectedBlocks: [],
@@ -122,21 +116,18 @@
             state.category = cat;
             state.repeatQueue = [];
             document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.replace('bg-slate-900', 'bg-white');
-                btn.classList.replace('text-white', 'text-slate-800');
+                btn.classList.remove('bg-slate-900', 'text-white', 'shadow-lg');
+                btn.classList.add('bg-white', 'text-slate-800');
             });
-            event.currentTarget.classList.replace('bg-white', 'bg-slate-900');
-            event.currentTarget.classList.replace('text-slate-800', 'text-white');
+            event.currentTarget.classList.add('bg-slate-900', 'text-white', 'shadow-lg');
             nextTask();
         }
 
-        function nextTask(skipRepeat = false) {
+        function nextTask() {
             const container = document.getElementById('task-container');
-            const repeatBadge = document.getElementById('repeat-badge');
+            const hintBadge = document.getElementById('hint-badge');
             const checkBadge = document.getElementById('check-badge');
             container.style.opacity = '0';
-            
-            if (skipRepeat) state.repeatQueue = [];
 
             setTimeout(() => {
                 if (state.repeatQueue.length > 0) {
@@ -146,24 +137,23 @@
                     
                     if (state.isHintMode) {
                         state.mode = item.mode;
-                        repeatBadge.classList.remove('hidden');
+                        hintBadge.classList.remove('hidden');
                         checkBadge.classList.add('hidden');
-                        // Сразу планируем этап контроля после подсказки
                         state.repeatQueue.push({ formula: item.formula, mode: item.mode, stage: 'check' });
                     } else {
-                        // Этап контроля: меняем режим
+                        // Этап чистого контроля - меняем режим на случайный
                         let m = Math.floor(Math.random() * 3);
                         state.mode = (m === item.mode) ? (m + 1) % 3 : m;
-                        repeatBadge.classList.add('hidden');
+                        hintBadge.classList.add('hidden');
                         checkBadge.classList.remove('hidden');
                     }
                 } else {
                     state.isHintMode = false;
+                    hintBadge.classList.add('hidden');
+                    checkBadge.classList.add('hidden');
                     const pool = state.category === 'all' ? FORMULAS_DB : FORMULAS_DB.filter(f => f.category === state.category);
                     state.currentTask = pool[Math.floor(Math.random() * pool.length)];
                     state.mode = Math.floor(Math.random() * 3);
-                    repeatBadge.classList.add('hidden');
-                    checkBadge.classList.add('hidden');
                 }
 
                 state.selectedBlocks = [];
@@ -175,55 +165,47 @@
         function renderUI() {
             const container = document.getElementById('task-container');
             const label = document.getElementById('task-type-label');
-            container.innerHTML = '';
-
+            
             if (state.mode === 0) {
                 label.innerText = "РЕЖИМ: НАЗВАНИЕ";
                 container.innerHTML = `
-                    <div class="text-center space-y-8 py-10">
-                        <div class="text-blue-500 font-black tracking-widest text-xs uppercase">Как называется эта формула?</div>
-                        <div class="min-h-[140px] flex items-center justify-center bg-slate-50 rounded-3xl p-4" id="math-display"></div>
+                    <div class="text-center space-y-8">
+                        <div class="text-blue-500 font-bold tracking-widest text-xs uppercase">Что это за формула?</div>
+                        <div class="min-h-[140px] flex items-center justify-center bg-slate-50 rounded-3xl" id="math-display"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto" id="options-grid"></div>
                     </div>
                 `;
                 katex.render(state.currentTask.formula, document.getElementById('math-display'), { displayMode: true });
                 renderOptions();
-            } 
-            else if (state.mode === 1) {
+            } else if (state.mode === 1) {
                 label.innerText = "РЕЖИМ: КОНСТРУКТОР";
                 container.innerHTML = `
                     <div class="text-center space-y-6">
-                        <div class="text-blue-500 font-black tracking-widest text-xs uppercase">Соберите формулу:</div>
+                        <div class="text-blue-500 font-bold tracking-widest text-xs uppercase">Соберите формулу:</div>
                         <h2 class="text-2xl font-bold text-slate-800">${state.currentTask.name}</h2>
-                        <div id="drop-zone" class="min-h-[110px] bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-wrap justify-center items-center gap-3 p-6 ${state.isHintMode ? 'border-emerald-400 bg-emerald-50/30' : ''}">
-                            <span class="text-slate-300 italic text-sm" id="empty-hint">...</span>
+                        <div id="drop-zone" class="min-h-[100px] bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-wrap justify-center items-center gap-2 p-6">
+                            <span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки внизу...</span>
                         </div>
-                        <div id="block-pool" class="flex flex-wrap justify-center gap-3 mt-10"></div>
-                        <div class="pt-10">
-                            <button onclick="checkConstructor()" class="w-full max-w-md bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-lg shadow-xl hover:bg-blue-700 active:scale-95 transition-all">ПРОВЕРИТЬ</button>
-                        </div>
+                        <div id="block-pool" class="flex flex-wrap justify-center gap-3 mt-8"></div>
+                        <div class="pt-8"><button onclick="checkConstructor()" class="w-full max-w-md bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 shadow-lg active:scale-95 transition-all">ПРОВЕРИТЬ</button></div>
                     </div>
                 `;
                 renderBlocks();
-            } 
-            else {
+            } else {
                 label.innerText = "РЕЖИМ: ПРОПУСК";
                 const displayFormula = state.currentTask.formula.replace(state.currentTask.missing, "\\color{blue}{\\dots}");
                 container.innerHTML = `
                     <div class="text-center space-y-8">
-                        <div class="text-blue-500 font-black tracking-widest text-xs uppercase">Заполните пропуск:</div>
-                        <h2 class="text-xl font-bold text-slate-600">${state.currentTask.name}</h2>
-                        <div class="py-10 bg-slate-50 rounded-3xl" id="math-gap"></div>
-                        <div class="flex flex-col items-center gap-5">
-                            <input type="text" id="gap-input" autocomplete="off" 
-                                class="w-full max-w-md border-2 ${state.isHintMode ? 'border-emerald-500 hint-pulse' : 'border-slate-200'} rounded-[1.5rem] px-8 py-5 text-center text-2xl font-mono focus:border-blue-500 focus:ring-8 focus:ring-blue-50 outline-none transition-all shadow-sm" 
-                                placeholder="${state.isHintMode ? state.currentTask.missing : 'Введите ответ...'}">
-                            <button onclick="checkGap()" class="w-full max-w-md bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-lg hover:bg-slate-800 active:scale-95 transition-all">ОТВЕТИТЬ</button>
+                        <div class="text-blue-500 font-bold tracking-widest text-xs uppercase">Заполните пропуск:</div>
+                        <h2 class="text-xl font-bold text-slate-700">${state.currentTask.name}</h2>
+                        <div class="py-12 bg-slate-50 rounded-3xl" id="math-gap"></div>
+                        <div class="flex flex-col items-center gap-4">
+                            <input type="text" id="gap-input" class="w-full max-w-md border-2 ${state.isHintMode ? 'border-emerald-500 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : 'border-slate-200'} rounded-2xl px-6 py-4 text-center text-xl font-mono focus:border-blue-500 outline-none transition-all" placeholder="${state.isHintMode ? 'Например: ' + state.currentTask.missing : 'Введите ответ...'}">
+                            <button onclick="checkGap()" class="w-full max-w-md bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all">ОТВЕТИТЬ</button>
                         </div>
                     </div>
                 `;
                 katex.render(displayFormula, document.getElementById('math-gap'), { displayMode: true });
-                if (state.isHintMode) document.getElementById('gap-input').value = state.currentTask.missing.replace(/\\/g, '');
                 document.getElementById('gap-input').focus();
                 document.getElementById('gap-input').addEventListener('keypress', e => e.key === 'Enter' && checkGap());
             }
@@ -239,50 +221,46 @@
 
             grid.innerHTML = options.map(o => {
                 const isCorrect = o === correct;
-                const hintClass = (state.isHintMode && isCorrect) ? 'border-emerald-500 bg-emerald-50 text-emerald-700 hint-pulse' : 'bg-white border-slate-100 text-slate-700';
-                return `
-                    <button onclick="checkOption('${o.replace(/'/g, "\\'")}')" class="border-2 p-5 rounded-2xl transition-all text-sm font-bold shadow-sm active:scale-95 ${hintClass}">
-                        ${o}
-                    </button>
-                `;
+                const hintClass = (state.isHintMode && isCorrect) ? 'bg-emerald-50 border-emerald-500 text-emerald-700 hint-pulse' : 'bg-white border-slate-100 text-slate-600';
+                return `<button onclick="checkOption('${o.replace(/'/g, "\\'")}')" class="border-2 p-5 rounded-2xl font-bold shadow-sm transition-all active:scale-95 ${hintClass}">${o}</button>`;
             }).join('');
         }
 
         function renderBlocks() {
             const pool = document.getElementById('block-pool');
             let items = [...state.currentTask.parts];
-            const noise = ["m", "v", "a", "t", "2", "F", "k", "q", "R", "L", "C", "T", "\\pi"];
+            const noise = ["m", "v", "a", "t", "2", "k", "q", "R", "L", "C", "T", "G", "\\pi", "F"];
             while(items.length < 12) {
                 let n = noise[Math.floor(Math.random() * noise.length)];
                 if(!items.includes(n)) items.push(n);
             }
             items.sort(() => 0.5 - Math.random());
             
-            pool.innerHTML = items.map(item => `
-                <button onclick="addBlock('${item.replace(/'/g, "\\'")}')" class="constructor-block bg-white border-2 border-slate-100 px-5 py-3 rounded-2xl text-lg font-mono font-bold text-slate-600 shadow-sm hover:border-blue-300">
-                    ${item}
-                </button>
-            `).join('');
-
-            if (state.isHintMode) {
-                // В режиме подсказки сразу "собираем" правильную формулу
-                state.currentTask.parts.forEach(p => addBlock(p, true));
-            }
+            pool.innerHTML = items.map(item => {
+                // ПРОВЕРКА: Если мы в режиме подсказки, выделяем ПРАВИЛЬНЫЕ блоки зеленым
+                const isPart = state.currentTask.parts.includes(item);
+                const hintClass = (state.isHintMode && isPart) ? 'bg-emerald-50 border-emerald-400 text-emerald-600 hint-pulse' : 'bg-white border-slate-100 text-slate-500';
+                
+                return `
+                    <button onclick="addBlock('${item.replace(/'/g, "\\'")}')" class="constructor-block border-2 px-5 py-3 rounded-xl text-lg font-mono font-bold shadow-sm hover:border-blue-300 ${hintClass}">
+                        ${item}
+                    </button>
+                `;
+            }).join('');
         }
 
-        function addBlock(val, isAuto = false) {
+        function addBlock(val) {
             document.getElementById('empty-hint')?.remove();
             state.selectedBlocks.push(val);
             const drop = document.getElementById('drop-zone');
             const el = document.createElement('div');
-            el.className = `px-4 py-2 rounded-xl font-mono text-lg font-bold shadow-md transition-all ${state.isHintMode ? 'bg-emerald-600' : 'bg-blue-600'} text-white cursor-pointer`;
+            el.className = "bg-blue-600 text-white px-4 py-2 rounded-xl font-mono text-lg font-bold cursor-pointer hover:bg-blue-700 animate-in zoom-in duration-200";
             el.innerText = val;
             el.onclick = () => {
-                if (state.isHintMode) return; // Запрещаем удаление в режиме подсказки для простоты
                 const idx = state.selectedBlocks.lastIndexOf(val);
                 if (idx > -1) state.selectedBlocks.splice(idx, 1);
                 el.remove();
-                if(state.selectedBlocks.length === 0) drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">...</span>';
+                if(state.selectedBlocks.length === 0) drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки внизу...</span>';
             };
             drop.appendChild(el);
         }
@@ -307,12 +285,12 @@
             const btn = document.getElementById('feedback-btn');
 
             if (isCorrect) {
-                state.score += state.isHintMode ? 5 : 20; // За подсказку даем меньше очков
+                state.score += state.isHintMode ? 10 : 20;
                 card.classList.add('success-flash');
-                icon.innerHTML = state.isHintMode ? "✨" : "🎯";
+                icon.innerHTML = state.isHintMode ? "✅" : "🎯";
                 msg.innerHTML = `
-                    <h3 class="text-2xl font-bold text-green-600">${state.isHintMode ? 'Закреплено!' : 'В точку!'}</h3>
-                    <p class="text-slate-500 font-medium">${state.isHintMode ? 'Теперь проверьте себя без подсказок' : 'Вы отлично знаете этот материал'}</p>
+                    <h3 class="text-2xl font-bold text-green-600">${state.isHintMode ? 'Отлично закрепили!' : 'Верно!'}</h3>
+                    <p class="text-slate-500 font-medium">${state.isHintMode ? 'А теперь проверим без помощи' : 'Вы молодец!'}</p>
                 `;
                 btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
                 if (!state.isHintMode && state.repeatQueue.length === 0) {
@@ -320,23 +298,21 @@
                 }
             } else {
                 state.score = Math.max(0, state.score - 15);
-                // Ошибка -> Начинаем цикл заново (Подсказка -> Контроль)
                 state.repeatQueue = [{ formula: state.currentTask, mode: state.mode, stage: 'hint' }];
                 card.classList.add('error-flash');
-                icon.innerHTML = "🤔";
+                icon.innerHTML = "❌";
                 msg.innerHTML = `
-                    <div class="space-y-4 max-w-lg mx-auto">
-                        <h3 class="text-2xl font-bold text-red-600">Нужно запомнить!</h3>
-                        <p class="text-slate-400 text-sm">Формула: <span class="font-bold text-slate-800">${state.currentTask.name}</span></p>
-                        <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100" id="correct-render"></div>
-                        <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-center gap-3">
-                            <span class="text-2xl">🌱</span>
-                            <p class="text-xs text-emerald-800 text-left">Сейчас мы покажем вам правильный ответ для закрепления, а затем проверим его еще раз без подсказки!</p>
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-bold text-red-600">Ошибка!</h3>
+                        <p class="text-slate-400">Правильная формула: <span class="font-bold text-slate-800">${state.currentTask.name}</span></p>
+                        <div class="bg-slate-50 p-6 rounded-3xl" id="correct-math-render"></div>
+                        <div class="bg-emerald-50 text-emerald-700 p-4 rounded-xl text-sm font-medium border border-emerald-100">
+                            Сейчас мы подсветим нужные блоки ЗЕЛЕНЫМ цветом. Постарайтесь запомнить их положение!
                         </div>
                     </div>
                 `;
                 btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
-                setTimeout(() => katex.render(state.currentTask.formula, document.getElementById('correct-render'), { displayMode: true }), 10);
+                setTimeout(() => katex.render(state.currentTask.formula, document.getElementById('correct-math-render'), { displayMode: true }), 10);
             }
 
             document.getElementById('score').innerText = state.score;
