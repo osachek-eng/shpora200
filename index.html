@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Физика ЕГЭ: 200 формул</title>
+    <title>Физика ЕГЭ: Полный тренажер</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -14,7 +14,7 @@
         .error-flash { animation: error-bg 0.6s ease; }
         @keyframes success-bg { 0%, 100% { background-color: white; } 50% { background-color: #f0fdf4; } }
         @keyframes error-bg { 0%, 100% { background-color: white; } 50% { background-color: #fef2f2; } }
-        .katex-display { margin: 1em 0 !important; font-size: 1.5em; }
+        .katex-display { margin: 1em 0 !important; font-size: 1.4em; }
         .constructor-block { user-select: none; transition: all 0.1s; cursor: pointer; }
         .constructor-block:active { transform: scale(0.95); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -26,7 +26,7 @@
         <header class="flex justify-between items-end mb-8">
             <div>
                 <h1 class="text-3xl font-bold tracking-tight text-slate-900">Физика ЕГЭ</h1>
-                <p class="text-slate-500 font-medium">Тренажер по шпоре «200 формул»</p>
+                <p class="text-slate-500 font-medium">Полная база формул по вашей шпоре</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm text-center">
                 <div class="text-3xl font-bold text-blue-600" id="score">0</div>
@@ -39,14 +39,14 @@
             <button onclick="setCategory('all')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-slate-900 text-white shadow-md">Все</button>
             <button onclick="setCategory('механика')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">Механика</button>
             <button onclick="setCategory('мкт')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">МКТ / Термо</button>
-            <button onclick="setCategory('электро')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">Электродинамика</button>
+            <button onclick="setCategory('электро')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">Электричество</button>
             <button onclick="setCategory('магнетизм')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">Магнетизм</button>
             <button onclick="setCategory('оптика')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">Оптика</button>
-            <button onclick="setCategory('кванты')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">Кванты</button>
+            <button onclick="setCategory('ядерка')" class="cat-btn px-5 py-2 rounded-xl text-sm font-medium transition-all bg-white border border-slate-200 hover:border-blue-400">Ядерка/Кванты</button>
         </div>
 
         <!-- Main Workspace -->
-        <main id="main-card" class="bg-white border border-slate-200 rounded-[2.5rem] p-6 md:p-12 shadow-sm min-h-[480px] flex flex-col justify-center relative overflow-hidden">
+        <main id="main-card" class="bg-white border border-slate-200 rounded-[2.5rem] p-6 md:p-12 shadow-sm min-h-[500px] flex flex-col justify-center relative overflow-hidden">
             <div id="task-container" class="opacity-100 transition-opacity duration-300"></div>
             
             <div id="feedback" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm z-20 transition-all">
@@ -65,67 +65,102 @@
 
     <script>
         const FORMULAS_DB = [
-            // МЕХАНИКА
-            { name: "Перемещение вдоль оси", formula: "S = \\Delta x = x - xo", parts: ["S", "=", "\\Delta x", "=", "x", "-", "xo"], missing: "\\Delta x", category: "механика" },
+            // МЕХАНИКА: КИНЕМАТИКА
+            { name: "Перемещение вдоль оси", formula: "S = \\Delta x = x - x0", parts: ["S", "=", "\\Delta x", "=", "x", "-", "x0"], missing: "\\Delta x", category: "механика" },
             { name: "Скорость", formula: "V = \\Delta x / \\Delta t", parts: ["V", "=", "\\Delta x", "/", "\\Delta t"], missing: "V", category: "механика" },
             { name: "Ускорение", formula: "a = \\Delta V / \\Delta t", parts: ["a", "=", "\\Delta V", "/", "\\Delta t"], missing: "a", category: "механика" },
-            { name: "Равномерное движение", formula: "x = xo + Vt", parts: ["x", "=", "xo", "+", "Vt"], missing: "Vt", category: "механика" },
-            { name: "Равнопеременное движение", formula: "x = xo + Vot + at^2 / 2", parts: ["x", "=", "xo", "+", "Vot", "+", "at^2 / 2"], missing: "at^2 / 2", category: "механика" },
-            { name: "Равнопеременное (без t)", formula: "x = xo + (V^2 - Vo^2) / 2a", parts: ["x", "=", "xo", "+", "(V^2 - Vo^2) / 2a"], missing: "Vo^2", category: "механика" },
-            { name: "Уравнение скорости", formula: "V = Vo + at", parts: ["V", "=", "Vo", "+", "at"], missing: "at", category: "механика" },
-            { name: "Относительная скорость (в одну сторону)", formula: "V_{OTH} = V2 - V1", parts: ["V_{OTH}", "=", "V2", "-", "V1"], missing: "V2 - V1", category: "механика" },
-            { name: "Относительная скорость (в разные)", formula: "V_{OTH} = V1 + V2", parts: ["V_{OTH}", "=", "V1", "+", "V2"], missing: "V1 + V2", category: "механика" },
-            { name: "Центростремительное ускорение", formula: "aц = V^2 / R", parts: ["aц", "=", "V^2", "/", "R"], missing: "V^2", category: "механика" },
+            { name: "Уравнение равномерного движения", formula: "x = x0 + Vt", parts: ["x", "=", "x0", "+", "Vt"], missing: "x0 + Vt", category: "механика" },
+            { name: "Уравнение равнопеременного движения", formula: "x = x0 + V_0t + at^2/2", parts: ["x", "=", "x0", "+", "V_0t", "+", "at^2/2"], missing: "at^2/2", category: "механика" },
+            { name: "Равнопеременное без времени", formula: "x = x0 + (V^2 - V_0^2)/2a", parts: ["x", "=", "x0", "+", "(V^2 - V_0^2)/2a"], missing: "2a", category: "механика" },
+            { name: "Уравнение скорости", formula: "V = V_0 + at", parts: ["V", "=", "V_0", "+", "at"], missing: "at", category: "механика" },
+            { name: "Средняя скорость", formula: "V_{cp} = S / t", parts: ["V_{cp}", "=", "S", "/", "t"], missing: "S/t", category: "механика" },
+            { name: "Относительная скорость (в одну сторону)", formula: "V_{OTH} = V_2 - V_1", parts: ["V_{OTH}", "=", "V_2", "-", "V_1"], missing: "V_2 - V_1", category: "механика" },
+            { name: "Относительная скорость (навстречу)", formula: "V_{OTH} = V_1 + V_2", parts: ["V_{OTH}", "=", "V_1", "+", "V_2"], missing: "V_1 + V_2", category: "механика" },
+            { name: "Период обращения", formula: "T = t / N", parts: ["T", "=", "t", "/", "N"], missing: "N", category: "механика" },
+            { name: "Частота", formula: "\\nu = 1 / T", parts: ["\\nu", "=", "1", "/", "T"], missing: "1/T", category: "механика" },
+            { name: "Линейная скорость (вращение)", formula: "V = 2\\pi R / T", parts: ["V", "=", "2\\pi R", "/", "T"], missing: "2\\pi R", category: "механика" },
+            { name: "Угловая скорость", formula: "\\omega = 2\\pi / T", parts: ["\\omega", "=", "2\\pi", "/", "T"], missing: "2\\pi/T", category: "механика" },
+            { name: "Центростремительное ускорение", formula: "a_ц = V^2 / R", parts: ["a_ц", "=", "V^2", "/", "R"], missing: "V^2", category: "механика" },
+            { name: "Связь V и угловой скорости", formula: "V = \\omega R", parts: ["V", "=", "\\omega", "R"], missing: "\\omega R", category: "механика" },
+            
+            // МЕХАНИКА: БАЛЛИСТИКА
+            { name: "Время полета (горизонт)", formula: "t_{пол} = 2V_0 \\sin \\alpha / g", parts: ["t_{пол}", "=", "2V_0", "\\sin \\alpha", "/", "g"], missing: "2V_0 \\sin \\alpha", category: "механика" },
+            { name: "Дальность полета", formula: "L = V_0^2 \\sin 2\\alpha / g", parts: ["L", "=", "V_0^2", "\\sin 2\\alpha", "/", "g"], missing: "\\sin 2\\alpha", category: "механика" },
+            { name: "Макс. высота полета", formula: "H_{max} = V_0^2 \\sin^2 \\alpha / 2g", parts: ["H_{max}", "=", "V_0^2", "\\sin^2 \\alpha", "/", "2g"], missing: "2g", category: "механика" },
+
+            // ДИНАМИКА И ГИДРО
             { name: "Второй закон Ньютона", formula: "F = ma", parts: ["F", "=", "m", "a"], missing: "ma", category: "механика" },
-            { name: "Закон всемирного тяготения", formula: "F = G m1 m2 / r^2", parts: ["F", "=", "G", "m1 m2 / r^2"], missing: "r^2", category: "механика" },
-            { name: "Сила Архимеда", formula: "Fa = \\rho_{ж} g V_{погр}", parts: ["Fa", "=", "\\rho_{ж}", "g", "V_{погр}"], missing: "V_{погр}", category: "механика" },
-            { name: "Работа силы", formula: "A = F S \\cos a", parts: ["A", "=", "F", "S", "\\cos a"], missing: "\\cos a", category: "механика" },
-            { name: "Кинетическая энергия", formula: "Eк = mV^2 / 2", parts: ["Eк", "=", "m", "V^2 / 2"], missing: "V^2 / 2", category: "механика" },
-            { name: "Потенциальная энергия", formula: "Eп = mgh", parts: ["Eп", "=", "m", "g", "h"], missing: "mgh", category: "механика" },
-            { name: "Момент силы", formula: "M = F l", parts: ["M", "=", "F", "l"], missing: "F l", category: "механика" },
-            { name: "Период нитяного маятника", formula: "T = 2\\pi \\sqrt{L/g}", parts: ["T", "=", "2\\pi", "\\sqrt{L/g}"], missing: "L/g", category: "механика" },
-            { name: "Период пружинного маятника", formula: "T = 2\\pi \\sqrt{m/k}", parts: ["T", "=", "2\\pi", "\\sqrt{m/k}"], missing: "m/k", category: "механика" },
+            { name: "Закон всемирного тяготения", formula: "F = G m_1 m_2 / r^2", parts: ["F", "=", "G", "m_1 m_2", "/", "r^2"], missing: "r^2", category: "механика" },
+            { name: "Первая космическая скорость", formula: "V_1 = \\sqrt{GM/R}", parts: ["V_1", "=", "\\sqrt{GM/R}"], missing: "GM/R", category: "механика" },
+            { name: "Закон Гука", formula: "F_{упр} = k \\Delta x", parts: ["F_{упр}", "=", "k", "\\Delta x"], missing: "k \\Delta x", category: "механика" },
+            { name: "Сила трения", formula: "F_{тр} = \\mu N", parts: ["F_{тр}", "=", "\\mu", "N"], missing: "\\mu N", category: "механика" },
+            { name: "Давление", formula: "p = F / S", parts: ["p", "=", "F", "/", "S"], missing: "F/S", category: "механика" },
+            { name: "Гидростатическое давление", formula: "p = \\rho g h", parts: ["p", "=", "\\rho", "g", "h"], missing: "\\rho g h", category: "механика" },
+            { name: "Сила Архимеда", formula: "F_A = \\rho_{ж} g V_{погр}", parts: ["F_A", "=", "\\rho_{ж}", "g", "V_{погр}"], missing: "\\rho_{ж}", category: "механика" },
 
-            // МКТ / ТЕРМО
+            // ИМПУЛЬС И ЭНЕРГИЯ
+            { name: "Импульс тела", formula: "p = mV", parts: ["p", "=", "m", "V"], missing: "mV", category: "механика" },
+            { name: "Импульс силы", formula: "F \\Delta t = \\Delta p", parts: ["F", "\\Delta t", "=", "\\Delta p"], missing: "F \\Delta t", category: "механика" },
+            { name: "Кинетическая энергия", formula: "E_к = mV^2/2", parts: ["E_к", "=", "m", "V^2/2"], missing: "V^2/2", category: "механика" },
+            { name: "Потенциальная энергия (высота)", formula: "E_п = mgh", parts: ["E_п", "=", "m", "g", "h"], missing: "mgh", category: "механика" },
+            { name: "Потенциальная энергия пружины", formula: "E_п = k \\Delta x^2 / 2", parts: ["E_п", "=", "k", "\\Delta x^2 / 2"], missing: "\\Delta x^2 / 2", category: "механика" },
+            { name: "Работа силы", formula: "A = F S \\cos \\alpha", parts: ["A", "=", "F", "S", "\\cos \\alpha"], missing: "\\cos \\alpha", category: "механика" },
+            { name: "Мощность", formula: "N = A / t = FV", parts: ["N", "=", "A/t", "=", "FV"], missing: "FV", category: "механика" },
+            { name: "Момент силы", formula: "M = F d", parts: ["M", "=", "F", "d"], missing: "F d", category: "механика" },
+
+            // МКТ
+            { name: "Количество вещества", formula: "\\nu = m / M = N / N_A", parts: ["\\nu", "=", "m/M", "=", "N/N_A"], missing: "m/M", category: "мкт" },
+            { name: "Основное уравнение МКТ (давление)", formula: "p = 1/3 n m_0 V_{cp}^2", parts: ["p", "=", "1/3", "n", "m_0", "V_{cp}^2"], missing: "1/3", category: "мкт" },
+            { name: "Средняя энергия молекул", formula: "E_{cp} = 3/2 kT", parts: ["E_{cp}", "=", "3/2", "k", "T"], missing: "3/2 kT", category: "мкт" },
             { name: "Уравнение Менделеева-Клапейрона", formula: "pV = \\nu RT", parts: ["p", "V", "=", "\\nu", "R", "T"], missing: "\\nu RT", category: "мкт" },
-            { name: "Основное уравнение МКТ (энергия)", formula: "P = 2/3 n E", parts: ["P", "=", "2/3", "n", "E"], missing: "2/3", category: "мкт" },
-            { name: "Давление через температуру", formula: "p = nkT", parts: ["p", "=", "n", "k", "T"], missing: "nkT", category: "мкт" },
-            { name: "Внутренняя энергия (1-атомный)", formula: "U = 3/2 \\nu RT", parts: ["U", "=", "3/2", "\\nu", "R", "T"], missing: "3/2", category: "мкт" },
-            { name: "Первый закон термодинамики", formula: "Q = \\Delta U + A", parts: ["Q", "=", "\\Delta U", "+", "A"], missing: "\\Delta U", category: "мкт" },
-            { name: "КПД тепловой машины", formula: "\\eta = (QH - Qx) / QH", parts: ["\\eta", "=", "(QH - Qx)", "/", "QH"], missing: "Qx", category: "мкт" },
-            { name: "Относительная влажность", formula: "\\phi = P / P_{нас}", parts: ["\\phi", "=", "P", "/", "P_{нас}"], missing: "P_{нас}", category: "мкт" },
-            { name: "Теплота нагревания", formula: "Q = cm \\Delta t", parts: ["Q", "=", "c", "m", "\\Delta t"], missing: "cm \\Delta t", category: "мкт" },
-            { name: "Теплота парообразования", formula: "Q = Lm", parts: ["Q", "=", "L", "m"], missing: "Lm", category: "мкт" },
+            { name: "Внутренняя энергия (идеальный газ)", formula: "U = 3/2 \\nu RT", parts: ["U", "=", "3/2", "\\nu", "R", "T"], missing: "3/2", category: "мкт" },
+            { name: "Относительная влажность", formula: "\\phi = p / p_{нас} \\cdot 100\\%", parts: ["\\phi", "=", "p/p_{нас}", "\\cdot", "100\\%"], missing: "p/p_{нас}", category: "мкт" },
 
-            // ЭЛЕКТРО
-            { name: "Закон Кулона", formula: "F = kqQ / \\epsilon r^2", parts: ["F", "=", "k", "qQ / \\epsilon r^2"], missing: "r^2", category: "электро" },
-            { name: "Напряженность точ. заряда", formula: "E = kq / r^2", parts: ["E", "=", "k", "q / r^2"], missing: "r^2", category: "электро" },
+            // ТЕРМОДИНАМИКА
+            { name: "Работа газа", formula: "A = p \\Delta V", parts: ["A", "=", "p", "\\Delta V"], missing: "p \\Delta V", category: "мкт" },
+            { name: "Первый закон термодинамики", formula: "Q = \\Delta U + A_{газа}", parts: ["Q", "=", "\\Delta U", "+", "A_{газа}"], missing: "\\Delta U", category: "мкт" },
+            { name: "Теплота нагревания", formula: "Q = cm \\Delta T", parts: ["Q", "=", "c", "m", "\\Delta T"], missing: "cm \\Delta T", category: "мкт" },
+            { name: "Теплота плавления", formula: "Q = \\lambda m", parts: ["Q", "=", "\\lambda", "m"], missing: "\\lambda m", category: "мкт" },
+            { name: "Теплота парообразования", formula: "Q = L m", parts: ["Q", "=", "L", "m"], missing: "L m", category: "мкт" },
+            { name: "КПД тепловой машины", formula: "\\eta = (Q_н - Q_х) / Q_н", parts: ["\\eta", "=", "(Q_н - Q_х)", "/", "Q_н"], missing: "Q_н - Q_х", category: "мкт" },
+            { name: "КПД цикла Карно", formula: "\\eta = (T_н - T_х) / T_н", parts: ["\\eta", "=", "(T_н - T_х)", "/", "T_н"], missing: "T_н", category: "мкт" },
+
+            // ЭЛЕКТРОСТАТИКА И ТОК
+            { name: "Закон Кулона", formula: "F = k q_1 q_2 / r^2", parts: ["F", "=", "k", "q_1 q_2", "/", "r^2"], missing: "r^2", category: "электро" },
+            { name: "Напряженность поля", formula: "E = F / q", parts: ["E", "=", "F", "/", "q"], missing: "F/q", category: "электро" },
+            { name: "Потенциал точечного заряда", formula: "\\phi = k q / r", parts: ["\\phi", "=", "k", "q", "/", "r"], missing: "r", category: "электро" },
             { name: "Электроемкость", formula: "C = q / U", parts: ["C", "=", "q", "/", "U"], missing: "q/U", category: "электро" },
-            { name: "Емкость плоского конд.", formula: "C = \\epsilon \\epsilon_0 S / d", parts: ["C", "=", "\\epsilon \\epsilon_0 S", "/", "d"], missing: "d", category: "электро" },
-            { name: "Закон Ома (участок)", formula: "I = U / R", parts: ["I", "=", "U", "/", "R"], missing: "R", category: "электро" },
-            { name: "Закон Ома (полная цепь)", formula: "I = E / (R+r)", parts: ["I", "=", "E", "/", "(R+r)"], missing: "r", category: "электро" },
-            { name: "Сопротивление", formula: "R = \\rho L / S", parts: ["R", "=", "\\rho", "L", "/", "S"], missing: "\\rho", category: "электро" },
-            { name: "Мощность тока", formula: "P = UI", parts: ["P", "=", "U", "I"], missing: "UI", category: "электро" },
+            { name: "Энергия конденсатора", formula: "W = CU^2 / 2", parts: ["W", "=", "C", "U^2 / 2"], missing: "U^2 / 2", category: "электро" },
+            { name: "Закон Ома для участка цепи", formula: "I = U / R", parts: ["I", "=", "U", "/", "R"], missing: "R", category: "электро" },
+            { name: "Сопротивление проводника", formula: "R = \\rho L / S", parts: ["R", "=", "\\rho", "L", "/", "S"], missing: "\\rho", category: "электро" },
+            { name: "Закон Ома для полной цепи", formula: "I = \\varepsilon / (R + r)", parts: ["I", "=", "\\varepsilon", "/", "(R + r)"], missing: "R + r", category: "электро" },
+            { name: "Мощность тока", formula: "P = UI = I^2 R", parts: ["P", "=", "U", "I", "=", "I^2 R"], missing: "I^2 R", category: "электро" },
             { name: "Закон Джоуля-Ленца", formula: "Q = I^2 R t", parts: ["Q", "=", "I^2", "R", "t"], missing: "I^2 R t", category: "электро" },
 
             // МАГНЕТИЗМ
-            { name: "Сила Ампера", formula: "Fa = IBL \\sin a", parts: ["Fa", "=", "I", "B", "L", "\\sin a"], missing: "Fa", category: "магнетизм" },
-            { name: "Сила Лоренца", formula: "Fn = qVB \\sin a", parts: ["Fn", "=", "q", "V", "B", "\\sin a"], missing: "Fn", category: "магнетизм" },
-            { name: "Магнитный поток", formula: "\\Phi = BS \\cos a", parts: ["\\Phi", "=", "B", "S", "\\cos a"], missing: "\\cos a", category: "магнетизм" },
-            { name: "Закон ЭМ индукции", formula: "Ei = -\\Delta \\Phi / \\Delta t", parts: ["Ei", "=", "-", "\\Delta \\Phi / \\Delta t"], missing: "\\Delta \\Phi", category: "магнетизм" },
-            { name: "Период (формула Томсона)", formula: "T = 2\\pi \\sqrt{LC}", parts: ["T", "=", "2\\pi", "\\sqrt{LC}"], missing: "LC", category: "магнетизм" },
+            { name: "Сила Ампера", formula: "F_A = I B L \\sin \\alpha", parts: ["F_A", "=", "I", "B", "L", "\\sin \\alpha"], missing: "\\sin \\alpha", category: "магнетизм" },
+            { name: "Сила Лоренца", formula: "F_л = q V B \\sin \\alpha", parts: ["F_л", "=", "q", "V", "B", "\\sin \\alpha"], missing: "q V B", category: "магнетизм" },
+            { name: "Магнитный поток", formula: "\\Phi = B S \\cos \\alpha", parts: ["\\Phi", "=", "B", "S", "\\cos \\alpha"], missing: "\\cos \\alpha", category: "магнетизм" },
+            { name: "Закон ЭМ индукции (Фарадея)", formula: "\\varepsilon_i = -\\Delta \\Phi / \\Delta t", parts: ["\\varepsilon_i", "=", "-", "\\Delta \\Phi / \\Delta t"], missing: "\\Delta \\Phi", category: "магнетизм" },
+            { name: "ЭДС самоиндукции", formula: "\\varepsilon_{si} = -L \\Delta I / \\Delta t", parts: ["\\varepsilon_{si}", "=", "-L", "\\Delta I / \\Delta t"], missing: "L", category: "магнетизм" },
+            { name: "Энергия магн. поля катушки", formula: "W_m = L I^2 / 2", parts: ["W_m", "=", "L", "I^2 / 2"], missing: "L I^2 / 2", category: "магнетизм" },
+            { name: "Период контура (Томсона)", formula: "T = 2\\pi \\sqrt{LC}", parts: ["T", "=", "2\\pi", "\\sqrt{LC}"], missing: "LC", category: "магнетизм" },
 
             // ОПТИКА
-            { name: "Закон Снеллиуса", formula: "n_1 \\sin a = n_2 \\sin b", parts: ["n_1 \\sin a", "=", "n_2 \\sin b"], missing: "\\sin b", category: "оптика" },
-            { name: "Формула тонкой линзы", formula: "1 / F = 1 / d + 1 / f", parts: ["1/F", "=", "1/d", "+", "1/f"], missing: "1/f", category: "оптика" },
+            { name: "Закон Снеллиуса (преломление)", formula: "n_1 \\sin \\alpha = n_2 \\sin \\beta", parts: ["n_1 \\sin \\alpha", "=", "n_2 \\sin \\beta"], missing: "\\sin \\beta", category: "оптика" },
+            { name: "Показатель преломления", formula: "n = c / V", parts: ["n", "=", "c", "/", "V"], missing: "c/V", category: "оптика" },
+            { name: "Формула тонкой линзы", formula: "1/F = 1/d + 1/f", parts: ["1/F", "=", "1/d", "+", "1/f"], missing: "1/d", category: "оптика" },
+            { name: "Оптическая сила линзы", formula: "D = 1 / F", parts: ["D", "=", "1", "/", "F"], missing: "1/F", category: "оптика" },
             { name: "Линейное увеличение", formula: "\\Gamma = f / d", parts: ["\\Gamma", "=", "f", "/", "d"], missing: "f/d", category: "оптика" },
-            { name: "Дифракционная решетка", formula: "d \\sin a = k \\lambda", parts: ["d \\sin a", "=", "k \\lambda"], missing: "k \\lambda", category: "оптика" },
+            { name: "Дифракционная решетка", formula: "d \\sin \\phi = k \\lambda", parts: ["d \\sin \\phi", "=", "k", "\\lambda"], missing: "k \\lambda", category: "оптика" },
 
-            // КВАНТЫ
-            { name: "Энергия фотона", formula: "E\\phi = hv", parts: ["E\\phi", "=", "h", "v"], missing: "hv", category: "кванты" },
-            { name: "Фотоэффект (Эйнштейн)", formula: "E\\phi = A_{вых} + E_{кmax}", parts: ["E\\phi", "=", "A_{вых}", "+", "E_{кmax}"], missing: "A_{вых}", category: "кванты" },
-            { name: "Импульс фотона", formula: "p = h / \\lambda", parts: ["p", "=", "h", "/", "\\lambda"], missing: "h/\\lambda", category: "кванты" },
-            { name: "Закон полураспада", formula: "N = No \\cdot 2^{-t/T}", parts: ["N", "=", "No", "\\cdot", "2^{-t/T}"], missing: "2^{-t/T}", category: "кванты" }
+            // КВАНТЫ И ЯДЕРКА
+            { name: "Энергия фотона", formula: "E = h\\nu = hc / \\lambda", parts: ["E", "=", "h\\nu", "=", "hc / \\lambda"], missing: "hc / \\lambda", category: "ядерка" },
+            { name: "Уравнение фотоэффекта", formula: "h\\nu = A_{вых} + E_{кmax}", parts: ["h\\nu", "=", "A_{вых}", "+", "E_{кmax}"], missing: "A_{вых}", category: "ядерка" },
+            { name: "Запирающее напряжение", formula: "e U_{зап} = E_{кmax}", parts: ["e U_{зап}", "=", "E_{кmax}"], missing: "e U_{зап}", category: "ядерка" },
+            { name: "Импульс фотона", formula: "p = E / c = h / \\lambda", parts: ["p", "=", "E/c", "=", "h/\\lambda"], missing: "h/\\lambda", category: "ядерка" },
+            { name: "Закон радиоактивного распада", formula: "N = N_0 \\cdot 2^{-t/T}", parts: ["N", "=", "N_0", "\\cdot", "2^{-t/T}"], missing: "2^{-t/T}", category: "ядерка" },
+            { name: "Энергия связи ядра", formula: "E_{св} = \\Delta m c^2", parts: ["E_{св}", "=", "\\Delta m", "c^2"], missing: "\\Delta m c^2", category: "ядерка" }
         ];
 
         let state = {
@@ -157,7 +192,7 @@
                     : FORMULAS_DB.filter(f => f.category === state.category);
                 
                 state.currentTask = pool[Math.floor(Math.random() * pool.length)];
-                state.mode = Math.floor(Math.random() * 3);
+                state.mode = Math.floor(Math.random() * 3); // 0: Name, 1: Constructor, 2: Gap
                 state.selectedBlocks = [];
                 
                 renderUI();
@@ -175,7 +210,7 @@
                 container.innerHTML = `
                     <div class="text-center space-y-8">
                         <div class="text-sm font-bold text-blue-500 tracking-widest uppercase">Какая это формула?</div>
-                        <div class="py-6 min-h-[100px] flex items-center justify-center" id="math-target"></div>
+                        <div class="py-6 min-h-[120px] flex items-center justify-center" id="math-target"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                             ${generateOptions(state.currentTask)}
                         </div>
@@ -189,8 +224,8 @@
                     <div class="text-center space-y-6">
                         <div class="text-sm font-bold text-blue-500 tracking-widest uppercase">Соберите компоненты:</div>
                         <h2 class="text-2xl font-bold text-slate-800 mb-6">${state.currentTask.name}</h2>
-                        <div id="drop-zone" class="min-h-[90px] border-b-2 border-slate-100 flex flex-wrap justify-center items-center gap-3 p-4 bg-slate-50/50 rounded-t-3xl">
-                            <span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки внизу...</span>
+                        <div id="drop-zone" class="min-h-[100px] border-b-2 border-slate-100 flex flex-wrap justify-center items-center gap-3 p-4 bg-slate-50/50 rounded-t-3xl">
+                            <span class="text-slate-300 italic text-sm" id="empty-hint">Кликайте по блокам внизу...</span>
                         </div>
                         <div id="block-pool" class="flex flex-wrap justify-center gap-2 mt-8"></div>
                         <div class="pt-6">
@@ -217,25 +252,20 @@
                     </div>
                 `;
                 katex.render(displayFormula, document.getElementById('math-gap'), { displayMode: true });
+                document.getElementById('gap-input').focus();
                 document.getElementById('gap-input').addEventListener('keypress', e => e.key === 'Enter' && checkGap());
             }
         }
 
         function generateOptions(correctObj) {
-            // Фильтруем пул по категории текущей формулы
             const sameCategoryPool = FORMULAS_DB.filter(f => f.category === correctObj.category && f.name !== correctObj.name);
-            
             let opts = [correctObj.name];
-            
-            // Если в категории мало формул, берем из общего пула
             const fillPool = sameCategoryPool.length >= 3 ? sameCategoryPool : FORMULAS_DB.filter(f => f.name !== correctObj.name);
-            
             const shuffledPool = fillPool.sort(() => Math.random() - 0.5);
             for (let item of shuffledPool) {
                 if (opts.length >= 4) break;
                 if (!opts.includes(item.name)) opts.push(item.name);
             }
-
             return opts.sort(() => Math.random() - 0.5).map(o => `
                 <button onclick="checkOption('${o.replace(/'/g, "\\'")}')" class="bg-white border border-slate-200 p-4 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all text-sm font-semibold text-slate-700 active:scale-95">
                     ${o}
@@ -246,13 +276,12 @@
         function renderBlocks() {
             const pool = document.getElementById('block-pool');
             let items = [...state.currentTask.parts];
-            const noise = ["+", "-", "xo", "Vo", "m", "\\Delta", "v", "P", "QH", "Qx", "2", "3/2", "g", "k", "\\sin a", "\\cos a", "R", "T", "n", "U", "I"];
+            const noise = ["+", "-", "x_0", "V_0", "m", "\\Delta", "v", "P", "Q_н", "2", "g", "k", "\\sin \\alpha", "\\cos \\alpha", "R", "T", "n", "U", "I", "c", "h"];
             while(items.length < 10) {
                 let n = noise[Math.floor(Math.random() * noise.length)];
                 if(!items.includes(n)) items.push(n);
             }
             items.sort(() => Math.random() - 0.5);
-
             pool.innerHTML = items.map(item => `
                 <button onclick="addBlock('${item.replace(/'/g, "\\'")}')" class="constructor-block bg-white border border-slate-200 px-4 py-2 rounded-xl text-lg font-mono shadow-sm hover:border-blue-400 active:bg-blue-50">
                     ${item}
@@ -271,24 +300,20 @@
                 const idx = state.selectedBlocks.lastIndexOf(val);
                 if (idx > -1) state.selectedBlocks.splice(idx, 1);
                 el.remove();
-                if(state.selectedBlocks.length === 0) drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки внизу...</span>';
+                if(state.selectedBlocks.length === 0) drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">Кликайте по блокам внизу...</span>';
             };
             drop.appendChild(el);
         }
 
-        function checkOption(val) {
-            verify(val === state.currentTask.name);
-        }
-
+        function checkOption(val) { verify(val === state.currentTask.name); }
         function checkGap() {
-            const input = document.getElementById('gap-input').value.trim().replace(/\\/g, '').replace(/ /g, '');
-            const correct = state.currentTask.missing.replace(/\\/g, '').replace(/ /g, '');
+            const input = document.getElementById('gap-input').value.trim().replace(/\\/g, '').replace(/[\s_{}]/g, '');
+            const correct = state.currentTask.missing.replace(/\\/g, '').replace(/[\s_{}]/g, '');
             verify(input.toLowerCase() === correct.toLowerCase());
         }
-
         function checkConstructor() {
-            const result = state.selectedBlocks.join('').replace(/[\s\\]/g, '');
-            const correct = state.currentTask.parts.join('').replace(/[\s\\]/g, '');
+            const result = state.selectedBlocks.join('').replace(/[\s\\_{}]/g, '');
+            const correct = state.currentTask.parts.join('').replace(/[\s\\_{}]/g, '');
             verify(result === correct);
         }
 
