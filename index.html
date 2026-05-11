@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Физика ЕГЭ: Полный тренажер</title>
+    <title>Физика ЕГЭ: Умный тренажер</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -26,7 +26,7 @@
         <header class="flex justify-between items-end mb-8">
             <div>
                 <h1 class="text-3xl font-bold tracking-tight text-slate-900">Физика ЕГЭ</h1>
-                <p class="text-slate-500 font-medium">Полная база формул по вашей шпоре</p>
+                <p class="text-slate-500 font-medium">Тренировка до победного</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm text-center">
                 <div class="text-3xl font-bold text-blue-600" id="score">0</div>
@@ -49,15 +49,19 @@
         <main id="main-card" class="bg-white border border-slate-200 rounded-[2.5rem] p-6 md:p-12 shadow-sm min-h-[500px] flex flex-col justify-center relative overflow-hidden">
             <div id="task-container" class="opacity-100 transition-opacity duration-300"></div>
             
-            <div id="feedback" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm z-20 transition-all">
+            <div id="feedback" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/98 backdrop-blur-md z-20 transition-all text-center">
                 <div id="feedback-icon" class="text-8xl mb-4"></div>
-                <div id="feedback-correct" class="text-slate-500 font-medium px-6 text-center"></div>
+                <div id="feedback-correct" class="text-slate-500 font-medium px-6"></div>
+                <button id="feedback-btn" class="mt-8 bg-slate-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-slate-800 transition-all">Продолжить</button>
             </div>
         </main>
 
         <div class="mt-6 flex justify-between items-center px-4">
-            <div class="text-xs text-slate-400 font-medium uppercase tracking-widest" id="task-type-label">Загрузка...</div>
-            <button onclick="nextTask()" class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+            <div class="flex items-center gap-2">
+                <div class="text-xs text-slate-400 font-medium uppercase tracking-widest" id="task-type-label">Загрузка...</div>
+                <div id="repeat-badge" class="hidden bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Повтор</div>
+            </div>
+            <button onclick="nextTask(true)" class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
                 Пропустить <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
             </button>
         </div>
@@ -82,16 +86,13 @@
             { name: "Угловая скорость", formula: "\\omega = 2\\pi / T", parts: ["\\omega", "=", "2\\pi", "/", "T"], missing: "2\\pi/T", category: "механика" },
             { name: "Центростремительное ускорение", formula: "a_ц = V^2 / R", parts: ["a_ц", "=", "V^2", "/", "R"], missing: "V^2", category: "механика" },
             { name: "Связь V и угловой скорости", formula: "V = \\omega R", parts: ["V", "=", "\\omega", "R"], missing: "\\omega R", category: "механика" },
-            
-            // МЕХАНИКА: БАЛЛИСТИКА
-            { name: "Время полета (горизонт)", formula: "t_{пол} = 2V_0 \\sin \\alpha / g", parts: ["t_{пол}", "=", "2V_0", "\\sin \\alpha", "/", "g"], missing: "2V_0 \\sin \\alpha", category: "механика" },
-            { name: "Дальность полета", formula: "L = V_0^2 \\sin 2\\alpha / g", parts: ["L", "=", "V_0^2", "\\sin 2\\alpha", "/", "g"], missing: "\\sin 2\\alpha", category: "механика" },
-            { name: "Макс. высота полета", formula: "H_{max} = V_0^2 \\sin^2 \\alpha / 2g", parts: ["H_{max}", "=", "V_0^2", "\\sin^2 \\alpha", "/", "2g"], missing: "2g", category: "механика" },
+            { name: "Время полета (баллистика)", formula: "t_{пол} = 2V_0 \\sin \\alpha / g", parts: ["t_{пол}", "=", "2V_0 \\sin \\alpha", "/", "g"], missing: "2V_0 \\sin \\alpha", category: "механика" },
+            { name: "Дальность полета (баллистика)", formula: "L = V_0^2 \\sin 2\\alpha / g", parts: ["L", "=", "V_0^2", "\\sin 2\\alpha", "/", "g"], missing: "\\sin 2\\alpha", category: "механика" },
+            { name: "Макс. высота полета (баллистика)", formula: "H_{max} = V_0^2 \\sin^2 \\alpha / 2g", parts: ["H_{max}", "=", "V_0^2", "\\sin^2 \\alpha", "/", "2g"], missing: "2g", category: "механика" },
 
             // ДИНАМИКА И ГИДРО
             { name: "Второй закон Ньютона", formula: "F = ma", parts: ["F", "=", "m", "a"], missing: "ma", category: "механика" },
             { name: "Закон всемирного тяготения", formula: "F = G m_1 m_2 / r^2", parts: ["F", "=", "G", "m_1 m_2", "/", "r^2"], missing: "r^2", category: "механика" },
-            { name: "Первая космическая скорость", formula: "V_1 = \\sqrt{GM/R}", parts: ["V_1", "=", "\\sqrt{GM/R}"], missing: "GM/R", category: "механика" },
             { name: "Закон Гука", formula: "F_{упр} = k \\Delta x", parts: ["F_{упр}", "=", "k", "\\Delta x"], missing: "k \\Delta x", category: "механика" },
             { name: "Сила трения", formula: "F_{тр} = \\mu N", parts: ["F_{тр}", "=", "\\mu", "N"], missing: "\\mu N", category: "механика" },
             { name: "Давление", formula: "p = F / S", parts: ["p", "=", "F", "/", "S"], missing: "F/S", category: "механика" },
@@ -100,67 +101,30 @@
 
             // ИМПУЛЬС И ЭНЕРГИЯ
             { name: "Импульс тела", formula: "p = mV", parts: ["p", "=", "m", "V"], missing: "mV", category: "механика" },
-            { name: "Импульс силы", formula: "F \\Delta t = \\Delta p", parts: ["F", "\\Delta t", "=", "\\Delta p"], missing: "F \\Delta t", category: "механика" },
             { name: "Кинетическая энергия", formula: "E_к = mV^2/2", parts: ["E_к", "=", "m", "V^2/2"], missing: "V^2/2", category: "механика" },
             { name: "Потенциальная энергия (высота)", formula: "E_п = mgh", parts: ["E_п", "=", "m", "g", "h"], missing: "mgh", category: "механика" },
-            { name: "Потенциальная энергия пружины", formula: "E_п = k \\Delta x^2 / 2", parts: ["E_п", "=", "k", "\\Delta x^2 / 2"], missing: "\\Delta x^2 / 2", category: "механика" },
             { name: "Работа силы", formula: "A = F S \\cos \\alpha", parts: ["A", "=", "F", "S", "\\cos \\alpha"], missing: "\\cos \\alpha", category: "механика" },
             { name: "Мощность", formula: "N = A / t = FV", parts: ["N", "=", "A/t", "=", "FV"], missing: "FV", category: "механика" },
-            { name: "Момент силы", formula: "M = F d", parts: ["M", "=", "F", "d"], missing: "F d", category: "механика" },
 
-            // МКТ
-            { name: "Количество вещества", formula: "\\nu = m / M = N / N_A", parts: ["\\nu", "=", "m/M", "=", "N/N_A"], missing: "m/M", category: "мкт" },
-            { name: "Основное уравнение МКТ (давление)", formula: "p = 1/3 n m_0 V_{cp}^2", parts: ["p", "=", "1/3", "n", "m_0", "V_{cp}^2"], missing: "1/3", category: "мкт" },
+            // МКТ / ТЕРМОДИНАМИКА
             { name: "Средняя энергия молекул", formula: "E_{cp} = 3/2 kT", parts: ["E_{cp}", "=", "3/2", "k", "T"], missing: "3/2 kT", category: "мкт" },
             { name: "Уравнение Менделеева-Клапейрона", formula: "pV = \\nu RT", parts: ["p", "V", "=", "\\nu", "R", "T"], missing: "\\nu RT", category: "мкт" },
             { name: "Внутренняя энергия (идеальный газ)", formula: "U = 3/2 \\nu RT", parts: ["U", "=", "3/2", "\\nu", "R", "T"], missing: "3/2", category: "мкт" },
-            { name: "Относительная влажность", formula: "\\phi = p / p_{нас} \\cdot 100\\%", parts: ["\\phi", "=", "p/p_{нас}", "\\cdot", "100\\%"], missing: "p/p_{нас}", category: "мкт" },
-
-            // ТЕРМОДИНАМИКА
-            { name: "Работа газа", formula: "A = p \\Delta V", parts: ["A", "=", "p", "\\Delta V"], missing: "p \\Delta V", category: "мкт" },
             { name: "Первый закон термодинамики", formula: "Q = \\Delta U + A_{газа}", parts: ["Q", "=", "\\Delta U", "+", "A_{газа}"], missing: "\\Delta U", category: "мкт" },
-            { name: "Теплота нагревания", formula: "Q = cm \\Delta T", parts: ["Q", "=", "c", "m", "\\Delta T"], missing: "cm \\Delta T", category: "мкт" },
-            { name: "Теплота плавления", formula: "Q = \\lambda m", parts: ["Q", "=", "\\lambda", "m"], missing: "\\lambda m", category: "мкт" },
-            { name: "Теплота парообразования", formula: "Q = L m", parts: ["Q", "=", "L", "m"], missing: "L m", category: "мкт" },
             { name: "КПД тепловой машины", formula: "\\eta = (Q_н - Q_х) / Q_н", parts: ["\\eta", "=", "(Q_н - Q_х)", "/", "Q_н"], missing: "Q_н - Q_х", category: "мкт" },
-            { name: "КПД цикла Карно", formula: "\\eta = (T_н - T_х) / T_н", parts: ["\\eta", "=", "(T_н - T_х)", "/", "T_н"], missing: "T_н", category: "мкт" },
 
-            // ЭЛЕКТРОСТАТИКА И ТОК
+            // ЭЛЕКТРО И МАГНЕТИЗМ
             { name: "Закон Кулона", formula: "F = k q_1 q_2 / r^2", parts: ["F", "=", "k", "q_1 q_2", "/", "r^2"], missing: "r^2", category: "электро" },
-            { name: "Напряженность поля", formula: "E = F / q", parts: ["E", "=", "F", "/", "q"], missing: "F/q", category: "электро" },
-            { name: "Потенциал точечного заряда", formula: "\\phi = k q / r", parts: ["\\phi", "=", "k", "q", "/", "r"], missing: "r", category: "электро" },
-            { name: "Электроемкость", formula: "C = q / U", parts: ["C", "=", "q", "/", "U"], missing: "q/U", category: "электро" },
-            { name: "Энергия конденсатора", formula: "W = CU^2 / 2", parts: ["W", "=", "C", "U^2 / 2"], missing: "U^2 / 2", category: "электро" },
-            { name: "Закон Ома для участка цепи", formula: "I = U / R", parts: ["I", "=", "U", "/", "R"], missing: "R", category: "электро" },
-            { name: "Сопротивление проводника", formula: "R = \\rho L / S", parts: ["R", "=", "\\rho", "L", "/", "S"], missing: "\\rho", category: "электро" },
             { name: "Закон Ома для полной цепи", formula: "I = \\varepsilon / (R + r)", parts: ["I", "=", "\\varepsilon", "/", "(R + r)"], missing: "R + r", category: "электро" },
-            { name: "Мощность тока", formula: "P = UI = I^2 R", parts: ["P", "=", "U", "I", "=", "I^2 R"], missing: "I^2 R", category: "электро" },
-            { name: "Закон Джоуля-Ленца", formula: "Q = I^2 R t", parts: ["Q", "=", "I^2", "R", "t"], missing: "I^2 R t", category: "электро" },
-
-            // МАГНЕТИЗМ
             { name: "Сила Ампера", formula: "F_A = I B L \\sin \\alpha", parts: ["F_A", "=", "I", "B", "L", "\\sin \\alpha"], missing: "\\sin \\alpha", category: "магнетизм" },
             { name: "Сила Лоренца", formula: "F_л = q V B \\sin \\alpha", parts: ["F_л", "=", "q", "V", "B", "\\sin \\alpha"], missing: "q V B", category: "магнетизм" },
-            { name: "Магнитный поток", formula: "\\Phi = B S \\cos \\alpha", parts: ["\\Phi", "=", "B", "S", "\\cos \\alpha"], missing: "\\cos \\alpha", category: "магнетизм" },
-            { name: "Закон ЭМ индукции (Фарадея)", formula: "\\varepsilon_i = -\\Delta \\Phi / \\Delta t", parts: ["\\varepsilon_i", "=", "-", "\\Delta \\Phi / \\Delta t"], missing: "\\Delta \\Phi", category: "магнетизм" },
-            { name: "ЭДС самоиндукции", formula: "\\varepsilon_{si} = -L \\Delta I / \\Delta t", parts: ["\\varepsilon_{si}", "=", "-L", "\\Delta I / \\Delta t"], missing: "L", category: "магнетизм" },
-            { name: "Энергия магн. поля катушки", formula: "W_m = L I^2 / 2", parts: ["W_m", "=", "L", "I^2 / 2"], missing: "L I^2 / 2", category: "магнетизм" },
             { name: "Период контура (Томсона)", formula: "T = 2\\pi \\sqrt{LC}", parts: ["T", "=", "2\\pi", "\\sqrt{LC}"], missing: "LC", category: "магнетизм" },
 
-            // ОПТИКА
-            { name: "Закон Снеллиуса (преломление)", formula: "n_1 \\sin \\alpha = n_2 \\sin \\beta", parts: ["n_1 \\sin \\alpha", "=", "n_2 \\sin \\beta"], missing: "\\sin \\beta", category: "оптика" },
-            { name: "Показатель преломления", formula: "n = c / V", parts: ["n", "=", "c", "/", "V"], missing: "c/V", category: "оптика" },
+            // ОПТИКА И КВАНТЫ
+            { name: "Закон Снеллиуса", formula: "n_1 \\sin \\alpha = n_2 \\sin \\beta", parts: ["n_1 \\sin \\alpha", "=", "n_2 \\sin \\beta"], missing: "\\sin \\beta", category: "оптика" },
             { name: "Формула тонкой линзы", formula: "1/F = 1/d + 1/f", parts: ["1/F", "=", "1/d", "+", "1/f"], missing: "1/d", category: "оптика" },
-            { name: "Оптическая сила линзы", formula: "D = 1 / F", parts: ["D", "=", "1", "/", "F"], missing: "1/F", category: "оптика" },
-            { name: "Линейное увеличение", formula: "\\Gamma = f / d", parts: ["\\Gamma", "=", "f", "/", "d"], missing: "f/d", category: "оптика" },
-            { name: "Дифракционная решетка", formula: "d \\sin \\phi = k \\lambda", parts: ["d \\sin \\phi", "=", "k", "\\lambda"], missing: "k \\lambda", category: "оптика" },
-
-            // КВАНТЫ И ЯДЕРКА
-            { name: "Энергия фотона", formula: "E = h\\nu = hc / \\lambda", parts: ["E", "=", "h\\nu", "=", "hc / \\lambda"], missing: "hc / \\lambda", category: "ядерка" },
             { name: "Уравнение фотоэффекта", formula: "h\\nu = A_{вых} + E_{кmax}", parts: ["h\\nu", "=", "A_{вых}", "+", "E_{кmax}"], missing: "A_{вых}", category: "ядерка" },
-            { name: "Запирающее напряжение", formula: "e U_{зап} = E_{кmax}", parts: ["e U_{зап}", "=", "E_{кmax}"], missing: "e U_{зап}", category: "ядерка" },
-            { name: "Импульс фотона", formula: "p = E / c = h / \\lambda", parts: ["p", "=", "E/c", "=", "h/\\lambda"], missing: "h/\\lambda", category: "ядерка" },
-            { name: "Закон радиоактивного распада", formula: "N = N_0 \\cdot 2^{-t/T}", parts: ["N", "=", "N_0", "\\cdot", "2^{-t/T}"], missing: "2^{-t/T}", category: "ядерка" },
-            { name: "Энергия связи ядра", formula: "E_{св} = \\Delta m c^2", parts: ["E_{св}", "=", "\\Delta m", "c^2"], missing: "\\Delta m c^2", category: "ядерка" }
+            { name: "Закон радиоактивного распада", formula: "N = N_0 \\cdot 2^{-t/T}", parts: ["N", "=", "N_0", "\\cdot", "2^{-t/T}"], missing: "2^{-t/T}", category: "ядерка" }
         ];
 
         let state = {
@@ -168,11 +132,13 @@
             score: 0,
             currentTask: null,
             mode: 0, 
-            selectedBlocks: []
+            selectedBlocks: [],
+            repeatTask: null // Храним формулу, в которой была ошибка
         };
 
         function setCategory(cat) {
             state.category = cat;
+            state.repeatTask = null; // Сбрасываем повтор при смене категории
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.classList.remove('bg-slate-900', 'text-white', 'shadow-md');
                 btn.classList.add('bg-white', 'text-slate-800', 'border-slate-200');
@@ -182,17 +148,27 @@
             nextTask();
         }
 
-        function nextTask() {
+        function nextTask(skipRepeat = false) {
             const container = document.getElementById('task-container');
+            const repeatBadge = document.getElementById('repeat-badge');
             container.style.opacity = '0';
             
+            if (skipRepeat) state.repeatTask = null;
+
             setTimeout(() => {
-                const pool = state.category === 'all' 
-                    ? FORMULAS_DB 
-                    : FORMULAS_DB.filter(f => f.category === state.category);
-                
-                state.currentTask = pool[Math.floor(Math.random() * pool.length)];
-                state.mode = Math.floor(Math.random() * 3); // 0: Name, 1: Constructor, 2: Gap
+                if (state.repeatTask) {
+                    state.currentTask = state.repeatTask;
+                    state.repeatTask = null; // Показываем один раз и сбрасываем, если снова не ошибется
+                    repeatBadge.classList.remove('hidden');
+                } else {
+                    const pool = state.category === 'all' 
+                        ? FORMULAS_DB 
+                        : FORMULAS_DB.filter(f => f.category === state.category);
+                    state.currentTask = pool[Math.floor(Math.random() * pool.length)];
+                    repeatBadge.classList.add('hidden');
+                }
+
+                state.mode = Math.floor(Math.random() * 3);
                 state.selectedBlocks = [];
                 
                 renderUI();
@@ -222,14 +198,14 @@
                 label.innerText = "РЕЖИМ: КОНСТРУКТОР";
                 container.innerHTML = `
                     <div class="text-center space-y-6">
-                        <div class="text-sm font-bold text-blue-500 tracking-widest uppercase">Соберите компоненты:</div>
+                        <div class="text-sm font-bold text-blue-500 tracking-widest uppercase">Соберите формулу:</div>
                         <h2 class="text-2xl font-bold text-slate-800 mb-6">${state.currentTask.name}</h2>
                         <div id="drop-zone" class="min-h-[100px] border-b-2 border-slate-100 flex flex-wrap justify-center items-center gap-3 p-4 bg-slate-50/50 rounded-t-3xl">
-                            <span class="text-slate-300 italic text-sm" id="empty-hint">Кликайте по блокам внизу...</span>
+                            <span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки внизу...</span>
                         </div>
                         <div id="block-pool" class="flex flex-wrap justify-center gap-2 mt-8"></div>
                         <div class="pt-6">
-                            <button onclick="checkConstructor()" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95">ПРОВЕРИТЬ СБОРКУ</button>
+                            <button onclick="checkConstructor()" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95">ПРОВЕРИТЬ</button>
                         </div>
                     </div>
                 `;
@@ -240,13 +216,13 @@
                 const displayFormula = state.currentTask.formula.replace(state.currentTask.missing, "\\color{blue}{\\square}");
                 container.innerHTML = `
                     <div class="text-center space-y-8">
-                        <div class="text-sm font-bold text-blue-500 tracking-widest uppercase">Чего не хватает?</div>
+                        <div class="text-sm font-bold text-blue-500 tracking-widest uppercase">Впишите пропущенное:</div>
                         <h2 class="text-xl font-semibold text-slate-600">${state.currentTask.name}</h2>
                         <div class="py-4" id="math-gap"></div>
                         <div class="flex flex-col items-center gap-4">
                             <input type="text" id="gap-input" autofocus 
                                 class="border-2 border-slate-100 rounded-2xl px-6 py-4 text-center text-2xl font-mono focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none w-full max-w-[320px] transition-all" 
-                                placeholder="Введите символ...">
+                                placeholder="...">
                             <button onclick="checkGap()" class="w-full max-w-[320px] bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all active:scale-95">ОТВЕТИТЬ</button>
                         </div>
                     </div>
@@ -276,7 +252,7 @@
         function renderBlocks() {
             const pool = document.getElementById('block-pool');
             let items = [...state.currentTask.parts];
-            const noise = ["+", "-", "x_0", "V_0", "m", "\\Delta", "v", "P", "Q_н", "2", "g", "k", "\\sin \\alpha", "\\cos \\alpha", "R", "T", "n", "U", "I", "c", "h"];
+            const noise = ["+", "-", "x_0", "V_0", "m", "\\Delta", "v", "P", "Q_н", "2", "g", "k", "R", "T", "n", "U", "I"];
             while(items.length < 10) {
                 let n = noise[Math.floor(Math.random() * noise.length)];
                 if(!items.includes(n)) items.push(n);
@@ -300,7 +276,7 @@
                 const idx = state.selectedBlocks.lastIndexOf(val);
                 if (idx > -1) state.selectedBlocks.splice(idx, 1);
                 el.remove();
-                if(state.selectedBlocks.length === 0) drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">Кликайте по блокам внизу...</span>';
+                if(state.selectedBlocks.length === 0) drop.innerHTML = '<span class="text-slate-300 italic text-sm" id="empty-hint">Нажимайте на блоки внизу...</span>';
             };
             drop.appendChild(el);
         }
@@ -322,35 +298,48 @@
             const feedback = document.getElementById('feedback');
             const icon = document.getElementById('feedback-icon');
             const correctMsg = document.getElementById('feedback-correct');
+            const btn = document.getElementById('feedback-btn');
 
             if (isCorrect) {
                 state.score += 15;
                 card.classList.add('success-flash');
                 icon.innerText = "✅";
-                correctMsg.innerText = "Верно!";
+                correctMsg.innerText = "Абсолютно верно!";
+                btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
+                
+                // Авто-скрытие при успехе
+                setTimeout(() => {
+                    if(!feedback.classList.contains('hidden')) {
+                        feedback.classList.add('hidden');
+                        nextTask();
+                    }
+                }, 1000);
+
             } else {
-                state.score = Math.max(0, state.score - 5);
+                state.score = Math.max(0, state.score - 10);
+                state.repeatTask = state.currentTask; // Запоминаем для следующего раза
                 card.classList.add('error-flash');
                 icon.innerText = "❌";
-                correctMsg.innerHTML = `<div class="space-y-2">
-                    <p class="text-slate-400">Ошибка. Правильно так:</p>
-                    <div class="text-slate-800 text-2xl font-bold" id="feedback-formula-render"></div>
-                </div>`;
+                correctMsg.innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-red-500 font-bold uppercase tracking-widest text-sm">Ошибка!</p>
+                        <p class="text-slate-400 text-sm">Правильный ответ для <b>${state.currentTask.name}</b>:</p>
+                        <div class="bg-slate-50 p-6 rounded-3xl" id="feedback-formula-render"></div>
+                        <p class="text-xs text-orange-500 font-medium italic">Запомните её, сейчас проверим еще раз!</p>
+                    </div>
+                `;
+                btn.onclick = () => { feedback.classList.add('hidden'); nextTask(); };
+                
                 setTimeout(() => {
-                    katex.render(state.currentTask.formula, document.getElementById('feedback-formula-render'));
-                }, 0);
+                    katex.render(state.currentTask.formula, document.getElementById('feedback-formula-render'), { displayMode: true });
+                }, 50);
             }
 
             document.getElementById('score').innerText = state.score;
             feedback.classList.remove('hidden');
             feedback.classList.add('flex');
-
-            setTimeout(() => {
-                card.classList.remove('success-flash', 'error-flash');
-                feedback.classList.add('hidden');
-                feedback.classList.remove('flex');
-                nextTask();
-            }, isCorrect ? 900 : 3500);
+            
+            setTimeout(() => card.classList.remove('success-flash', 'error-flash'), 600);
         }
 
         window.onload = nextTask;
