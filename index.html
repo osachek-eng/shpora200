@@ -36,10 +36,9 @@
         <!-- Category Selector -->
         <div class="flex gap-2 overflow-x-auto pb-4 no-scrollbar mb-4" id="cat-list">
             <button onclick="setCategory('all')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-slate-900 text-white">ВСЕ ТЕМЫ</button>
-            <button onclick="setCategory('кинематика')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">КИНЕМАТИКА</button>
-            <button onclick="setCategory('динамика')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">ДИНАМИКА</button>
-            <button onclick="setCategory('мкт')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">МКТ</button>
-            <button onclick="setCategory('электро')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">ЭЛЕКТРО</button>
+            <button onclick="setCategory('механика')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">МЕХАНИКА</button>
+            <button onclick="setCategory('мкт')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">МКТ И ТЕРМО</button>
+            <button onclick="setCategory('электро')" class="cat-btn shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-slate-200">ЭЛЕКТРОДИНАМИКА</button>
         </div>
 
         <!-- Main Workspace -->
@@ -60,29 +59,41 @@
     </div>
 
     <script>
-        // БАЗА ДАННЫХ ФОРМУЛ (Разделы из вашей шпоры)
+        // РАСШИРЕННАЯ БАЗА ДАННЫХ ИЗ ФАЙЛА ШПОРЫ
         const DB = [
             // МЕХАНИКА: Кинематика
-            { name: "Перемещение (ось x)", formula: "S = x - x_0", parts: ["S", "=", "x", "-", "x_0"], cat: "кинематика" },
-            { name: "Скорость", formula: "v = \\frac{\\Delta x}{\\Delta t}", parts: ["v", "=", "\\Delta x", "/", "\\Delta t"], cat: "кинематика" },
-            { name: "Ускорение", formula: "a = \\frac{\\Delta v}{\\Delta t}", parts: ["a", "=", "\\Delta v", "/", "\\Delta t"], cat: "кинематика" },
-            { name: "Равнопеременное движение", formula: "x = x_0 + v_0 t + \\frac{a t^2}{2}", parts: ["x", "=", "x_0", "+", "v_0 t", "+", "a t^2 / 2"], cat: "кинематика" },
-            { name: "Центростремительное ускорение", formula: "a_{ц} = \\frac{v^2}{R}", parts: ["a_{ц}", "=", "v^2", "/", "R"], cat: "кинематика" },
+            { name: "Перемещение", formula: "S = x - x_0", parts: ["S", "=", "x", "-", "x_0"], cat: "механика" },
+            { name: "Скорость", formula: "v = \\frac{\\Delta x}{\\Delta t}", parts: ["v", "=", "\\Delta x", "/", "\\Delta t"], cat: "механика" },
+            { name: "Ускорение", formula: "a = \\frac{\\Delta v}{\\Delta t}", parts: ["a", "=", "\\Delta v", "/", "\\Delta t"], cat: "механика" },
+            { name: "Координата (равнопеременное)", formula: "x = x_0 + v_0 t + \\frac{a t^2}{2}", parts: ["x", "=", "x_0", "+", "v_0 t", "+", "a t^2 / 2"], cat: "механика" },
+            { name: "Путь без времени", formula: "S = \\frac{v^2 - v_0^2}{2a}", parts: ["S", "=", "v^2 - v_0^2", "/", "2a"], cat: "механика" },
+            { name: "Средняя скорость", formula: "v_{ср} = \\frac{S}{t}", parts: ["v_{ср}", "=", "S", "/", "t"], cat: "механика" },
+            { name: "Угловая скорость", formula: "\\omega = \\frac{2 \\pi}{T}", parts: ["\\omega", "=", "2 \\pi", "/", "T"], cat: "механика" },
+            { name: "Центростремительное ускорение", formula: "a_{ц} = \\omega^2 R", parts: ["a_{ц}", "=", "\\omega^2", "R"], cat: "механика" },
+
+            // МЕХАНИКА: Динамика
+            { name: "Второй закон Ньютона", formula: "F = m a", parts: ["F", "=", "m", "a"], cat: "механика" },
+            { name: "Импульс тела", formula: "p = m v", parts: ["p", "=", "m", "v"], cat: "механика" },
+            { name: "Закон всемирного тяготения", formula: "F = G \\frac{m_1 m_2}{r^2}", parts: ["F", "=", "G", "m_1 m_2", "/", "r^2"], cat: "механика" },
+            { name: "Сила Архимеда", formula: "F_А = \\rho g V", parts: ["F_А", "=", "\\rho", "g", "V"], cat: "механика" },
+            { name: "Момент силы", formula: "M = F d", parts: ["M", "=", "F", "d"], cat: "механика" },
             
-            // МЕХАНИКА: Динамика и Статика
-            { name: "Второй закон Ньютона", formula: "F = m a", parts: ["F", "=", "m", "a"], cat: "динамика" },
-            { name: "Закон всемирного тяготения", formula: "F = G \\frac{m_1 m_2}{r^2}", parts: ["F", "=", "G", "m_1 m_2", "/", "r^2"], cat: "динамика" },
-            { name: "Сила упругости (Закон Гука)", formula: "F_{упр} = k |\\Delta x|", parts: ["F_{упр}", "=", "k", "|\\Delta x|"], cat: "динамика" },
-            { name: "Сила Архимеда", formula: "F_А = \\rho g V", parts: ["F_А", "=", "\\rho", "g", "V"], cat: "динамика" },
-            
-            // МКТ
-            { name: "Основное уравнение МКТ", formula: "p = \\frac{1}{3} n m_0 v^2", parts: ["p", "=", "1/3", "n", "m_0", "v^2"], cat: "мкт" },
-            { name: "Уравнение Менделеева-Клапейрона", formula: "p V = \\nu R T", parts: ["p", "V", "=", "\\nu", "R", "T"], cat: "мкт" },
-            { name: "Средняя энергия молекул", formula: "E = \\frac{3}{2} k T", parts: ["E", "=", "3/2", "k", "T"], cat: "мкт" },
-            
-            // ЭЛЕКТРОСТАТИКА
-            { name: "Закон Кулона", formula: "F = k \\frac{|q_1 q_2|}{r^2}", parts: ["F", "=", "k", "q_1 q_2", "/", "r^2"], cat: "электро" },
-            { name: "Напряженность поля", formula: "E = \\frac{F}{q}", parts: ["E", "=", "F", "/", "q"], cat: "электро" }
+            // МКТ и ТЕРМОДИНАМИКА
+            { name: "Давление газа (МКТ)", formula: "p = n k T", parts: ["p", "=", "n", "k", "T"], cat: "мкт" },
+            { name: "Уравнение состояния", formula: "p V = \\nu R T", parts: ["p", "V", "=", "\\nu", "R", "T"], cat: "мкт" },
+            { name: "Внутренняя энергия (одноатомный)", formula: "U = \\frac{3}{2} \\nu R T", parts: ["U", "=", "3/2", "\\nu", "R", "T"], cat: "мкт" },
+            { name: "Работа газа", formula: "A = p \\Delta V", parts: ["A", "=", "p", "\\Delta V"], cat: "мкт" },
+            { name: "Первое начало термодинамики", formula: "Q = \\Delta U + A", parts: ["Q", "=", "\\Delta U", "+", "A"], cat: "мкт" },
+            { name: "КПД тепловой машины", formula: "\\eta = \\frac{Q_1 - Q_2}{Q_1}", parts: ["\\eta", "=", "Q_1 - Q_2", "/", "Q_1"], cat: "мкт" },
+
+            // ЭЛЕКТРОДИНАМИКА
+            { name: "Закон Кулона", formula: "F = k \\frac{q_1 q_2}{r^2}", parts: ["F", "=", "k", "q_1 q_2", "/", "r^2"], cat: "электро" },
+            { name: "Напряженность поля", formula: "E = \\frac{F}{q}", parts: ["E", "=", "F", "/", "q"], cat: "электро" },
+            { name: "Потенциальная энергия заряда", formula: "W_p = q E d", parts: ["W_p", "=", "q", "E", "d"], cat: "электро" },
+            { name: "Электроемкость", formula: "C = \\frac{q}{U}", parts: ["C", "=", "q", "/", "U"], cat: "электро" },
+            { name: "Энергия конденсатора", formula: "W_c = \\frac{C U^2}{2}", parts: ["W_c", "=", "C", "U^2", "/", "2"], cat: "электро" },
+            { name: "Закон Ома для участка цепи", formula: "I = \\frac{U}{R}", parts: ["I", "=", "U", "/", "R"], cat: "электро" },
+            { name: "Закон Джоуля-Ленца", formula: "Q = I^2 R t", parts: ["Q", "=", "I^2", "R", "t"], cat: "электро" }
         ];
 
         let state = {
@@ -133,7 +144,7 @@
                     </div>
 
                     <div id="drop-zone" class="min-h-[120px] bg-slate-50 border-4 border-dotted border-slate-100 rounded-3xl flex flex-wrap justify-center items-center gap-2 p-6 transition-all">
-                        <span class="text-slate-300 font-bold text-sm italic">Перетащите сюда...</span>
+                        <span class="text-slate-300 font-bold text-sm italic">Нажимайте на блоки ниже...</span>
                     </div>
 
                     <div id="pool" class="flex flex-wrap justify-center gap-3 pt-4"></div>
@@ -150,9 +161,9 @@
         function renderPool() {
             const poolEl = document.getElementById('pool');
             let blocks = [...state.task.parts];
-            const noise = ["m", "v", "a", "t", "2", "k", "R", "F", "P", "x", "y", "z", "0"];
+            const noise = ["m", "v", "a", "t", "2", "k", "R", "F", "P", "x", "y", "0", "E", "g"];
             
-            while(blocks.length < 10) {
+            while(blocks.length < 12) {
                 let n = noise[Math.floor(Math.random() * noise.length)];
                 if(!blocks.includes(n)) blocks.push(n);
             }
@@ -170,7 +181,7 @@
                 }
 
                 return `
-                    <div onclick="addToDrop('${val}')" class="constructor-block px-5 py-3 rounded-xl font-mono text-lg shadow-sm ${styles}">
+                    <div onclick="addToDrop('${val}')" class="constructor-block px-4 py-3 rounded-xl font-mono text-lg shadow-sm ${styles}">
                         ${badge}${val}
                     </div>
                 `;
@@ -182,47 +193,52 @@
             state.userParts.push(v);
             const drop = document.getElementById('drop-zone');
             const el = document.createElement('div');
-            el.className = "bg-slate-800 text-white px-4 py-2 rounded-xl font-mono text-lg font-bold animate-in fade-in zoom-in duration-200";
+            el.className = "bg-slate-800 text-white px-4 py-2 rounded-xl font-mono text-lg font-bold animate-in fade-in zoom-in duration-200 cursor-pointer";
             el.innerText = v;
             el.onclick = () => {
                 const i = state.userParts.lastIndexOf(v);
                 if(i > -1) state.userParts.splice(i, 1);
                 el.remove();
-                if(state.userParts.length === 0) drop.innerHTML = '<span class="text-slate-300 font-bold text-sm italic">Перетащите сюда...</span>';
+                if(state.userParts.length === 0) drop.innerHTML = '<span class="text-slate-300 font-bold text-sm italic">Нажимайте на блоки ниже...</span>';
             };
             drop.appendChild(el);
         }
 
         function resetDrop() {
             state.userParts = [];
-            document.getElementById('drop-zone').innerHTML = '<span class="text-slate-300 font-bold text-sm italic">Перетащите сюда...</span>';
+            document.getElementById('drop-zone').innerHTML = '<span class="text-slate-300 font-bold text-sm italic">Нажимайте на блоки ниже...</span>';
         }
 
         function check() {
-            // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: точное сравнение массивов
-            const isMatch = JSON.stringify(state.userParts) === JSON.stringify(state.task.parts);
+            // ИСПРАВЛЕННАЯ ПРОВЕРКА: удаляем пробелы перед сравнением
+            const normalize = (arr) => arr.map(s => s.replace(/\s/g, ''));
+            const userNorm = normalize(state.userParts);
+            const taskNorm = normalize(state.task.parts);
+            
+            const isMatch = JSON.stringify(userNorm) === JSON.stringify(taskNorm);
+            
             const overlay = document.getElementById('feedback');
             const icon = document.getElementById('feedback-icon');
             const text = document.getElementById('feedback-text');
             const btn = document.getElementById('feedback-btn');
 
             if (isMatch) {
-                state.score += state.isHint ? 5 : 20;
+                state.score += state.isHint ? 10 : 30;
                 document.getElementById('main-card').classList.add('success-flash');
-                icon.innerText = "⭐";
-                text.innerHTML = `<h3 class="text-2xl font-black text-emerald-600 mb-2">БРАВО!</h3><p class="text-slate-400 font-bold">Формула верна</p>`;
+                icon.innerText = "🎯";
+                text.innerHTML = `<h3 class="text-2xl font-black text-emerald-600 mb-2">ВЕРНО!</h3><p class="text-slate-400 font-bold">Вы собрали формулу правильно.</p>`;
                 btn.onclick = () => { overlay.classList.add('hidden'); next(); };
             } else {
-                state.score = Math.max(0, state.score - 10);
+                state.score = Math.max(0, state.score - 15);
                 state.repeatTask = state.task;
-                icon.innerText = "💡";
+                icon.innerText = "❌";
                 text.innerHTML = `
                     <h3 class="text-2xl font-black text-rose-500 mb-2">ОШИБКА</h3>
-                    <div id="math-res" class="bg-slate-50 p-4 rounded-2xl mb-2"></div>
-                    <p class="text-slate-400 text-xs font-bold uppercase tracking-tighter">Запомни и повтори по номерам!</p>
+                    <div id="math-res" class="bg-slate-50 p-6 rounded-2xl mb-4 text-xl"></div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Следующий раз используй номера-подсказки!</p>
                 `;
                 btn.onclick = () => { overlay.classList.add('hidden'); next(); };
-                setTimeout(() => katex.render(state.task.formula, document.getElementById('math-res')), 50);
+                setTimeout(() => katex.render(state.task.formula, document.getElementById('math-res'), { displayMode: true }), 50);
             }
 
             document.getElementById('score').innerText = state.score;
